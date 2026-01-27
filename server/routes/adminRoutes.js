@@ -31,7 +31,7 @@ router.get('/users', async (req, res) => {
     try {
         const [users] = await db.query('SELECT id, nome, email, setor, congregacao, idade, status, is_admin FROM users ORDER BY nome');
         res.json(users);
-        console.log(users);
+
     } catch (e) {
         res.status(500).json({ message: 'Erro ao listar usuários' });
     }
@@ -39,7 +39,7 @@ router.get('/users', async (req, res) => {
 
 // Update User (Block/Unblock, Authorize Admin)
 router.put('/users/:id', async (req, res) => {
-    const { status, is_admin } = req.body;
+    const { status, is_admin } = req.body || {};
     try {
         await db.query('UPDATE users SET status = ?, is_admin = ? WHERE id = ?',
             [status, is_admin, req.params.id]);
@@ -91,7 +91,7 @@ router.get('/questions', async (req, res) => {
 
 // Add Question
 router.post('/questions', async (req, res) => {
-    const { question_text, options } = req.body; // options: [{ text: '...', is_correct: true }, ...]
+    const { question_text, options } = req.body || {}; // options: [{ text: '...', is_correct: true }, ...]
 
     if (!options || options.length !== 4) {
         return res.status(400).json({ message: 'Necessário fornecer 4 opções.' });
@@ -144,7 +144,7 @@ router.get('/quiz-status', async (req, res) => {
 
 // Toggle Quiz Status
 router.post('/quiz-control', async (req, res) => {
-    const { active } = req.body; // boolean
+    const { active } = req.body || {}; // boolean
     try {
         await db.query("INSERT INTO system_settings (setting_key, setting_value) VALUES ('quiz_active', ?) ON DUPLICATE KEY UPDATE setting_value = ?",
             [active.toString(), active.toString()]);

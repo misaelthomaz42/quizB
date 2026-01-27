@@ -5,7 +5,7 @@ const router = express.Router();
 
 // Register
 router.post('/register', async (req, res) => {
-    const { nome, email, setor, congregacao, idade, password } = req.body;
+    const { nome, email, setor, congregacao, idade, password } = req.body || {};
 
     try {
         const [existing] = await db.query('SELECT id FROM users WHERE email = ?', [email]);
@@ -28,7 +28,7 @@ router.post('/register', async (req, res) => {
 
 // Login
 router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
 
     try {
         const [users] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
