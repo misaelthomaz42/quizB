@@ -14,6 +14,7 @@ CREATE TABLE users (
     idade INT,
     senha_hash VARCHAR(255) NOT NULL,
     status ENUM('active', 'blocked') DEFAULT 'active',
+    is_admin BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -53,6 +54,13 @@ CREATE TABLE user_answers (
     FOREIGN KEY (attempt_id) REFERENCES exam_attempts(id) ON DELETE CASCADE,
     FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE,
     FOREIGN KEY (selected_option_id) REFERENCES question_options(id)
+);
+
+-- 6. System Settings (for global toggles like Quiz Active)
+CREATE TABLE system_settings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    setting_key VARCHAR(50) NOT NULL UNIQUE,
+    setting_value VARCHAR(255)
 );
 
 -- Initial Mock Data (Optional - for testing)
