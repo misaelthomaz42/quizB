@@ -1,0 +1,109 @@
+preciso criar um sistema de avaliacao biblica. 
+
+
+preciso qeu vc faça o front e consuma alguns endpoints da minha API api/misael
+
+então faça uma simulacao preenchendo com dados ficticios depois eu vou ajustar com dados reais
+
+
+O ssitema tem 
+
+tela cadastro 
+
+nome
+email
+area/setor
+congregacao
+idade
+senha
+repita senha
+
+
+
+Tela login 
+
+email
+senha
+
+botão recuperar senha
+
+
+Tela Principal do usuario
+
+Botão centralizado INICIAR PROVA
+
+quando iniciar em iniciar prova o usuario vai para a tela de PROVA
+
+nessa tela de PROVA o usuario verá 10 questoes , cada questão tem 4 alternativas 
+e so pode marcar 1 
+
+nessa tela também tera um contador centraliazdo no topo com um tempo de duracao de 2h
+
+A prova sera ser encerrada com um poup "PROVA ENCERRADA" se o usuario sair da pagina, atualizar a pagina, clicar fora da pagina, minimzar a pagina, trocar de aba. Esse usuario nao vai conseguir mais entrar com o login, vai aparecer uma mensagem usuario bloqueado, por favor falar com os adm
+
+
+no fim da pagina vai ter um botão Enviar Provar. Ao clicar nesse Enviar Prova, o usuario voltara para a pagina inicial com um poup "prova enviada com sucesso"  e a mensagem  no lugar do botão " inciar prova"  vai ter  "Aguardando Resultado"
+
+Adicione um botão de logout também no app.
+
+Preciso que seja responsivo, para celular , computador e tablet. 
+
+cores : azul, branco de preferencia. 
+
+
+
+Abrigo Social I
+Alto do Carneiro
+Abrigo social 3
+Areeiro 1
+Areeiro 2
+Areeiro 3
+Boa vista
+Jordão
+Jordão2
+Alto Jordão
+Córrego da Gameleira
+Jardim Primavera
+Alto Castelo Branco
+Alto Castelo Branco 2
+Alto da Esperança
+Sudene
+Xingu
+Córrego da Jaqueira
+Sonho Dourado
+Jordão Baixo
+Alto da Jaqueira
+
+
+
+
+
+Need some updates on app. 
+
+1- the app will be a adm user
+misaelta.contato@gmail.com
+password:123456
+
+2 - the quiz will be have 10 questions with 4 options, and just 1 true option. For each option the user win 0,5 point.
+The system save the time that the user finishe the quiz.
+
+3- Create a area of admin.
+
+this area will be just used by users that are ADM.  
+
+In this area I want pages options to ADMIN USER. 
+
+4- a page when the Admin can see the Users and can Edit, Delete ,block, unblocked any users.
+Also the admin can add a new User.
+
+5- a page where The admin can add new questions  with  A Question and 4 options, and he can mark the correct option between the 4. 
+
+6- a page where the admin can Start the Quiz and can STOP it.
+
+7- A page where the Admin can see the results of each users. In this page the ADMIN can see a rank with the best notes in the shortest time
+  . The admin can delete indivualmente um result of one user. The Admin can see all questions that was anwswer by the user. 
+
+8- A page of autorization, in this page the Admin can give the ADMIN autorization for any user.
+
+
+if need update the database_schma.sql     and I will execute it on phpmyadmin. 
