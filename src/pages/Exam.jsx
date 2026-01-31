@@ -41,7 +41,6 @@ const Exam = () => {
 
         // Prevent Context Menu
         const handleContextMenu = (e) => e.preventDefault();
-
         window.addEventListener('visibilitychange', handleVisibilityChange);
         window.addEventListener('blur', handleBlur);
         window.addEventListener('contextmenu', handleContextMenu);
@@ -107,15 +106,18 @@ const Exam = () => {
     };
 
     const formatTime = (seconds) => {
+
         const h = Math.floor(seconds / 3600);
         const m = Math.floor((seconds % 3600) / 60);
         const s = seconds % 60;
         return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
     };
 
     if (loading) return <div className="flex-center" style={{ height: '100vh' }}>Carregando prova...</div>;
 
     if (blocked) {
+
         return (
             <div className="flex-center" style={{ height: '100vh', background: '#FEF2F2' }}>
                 <div className="glass-card text-center" style={{ borderColor: '#EF4444', animation: 'none' }}>
@@ -125,7 +127,7 @@ const Exam = () => {
                         <br />
                         Por favor falar com os administradores.
                     </p>
-                    <button onClick={() => navigate('/')} className="btn" style={{ background: '#DC2626', color: 'white' }}>
+                    <button onClick={() => navigate('/login')} className="btn" style={{ background: '#DC2626', color: 'white' }}>
                         Voltar ao Início
                     </button>
                 </div>
@@ -201,6 +203,7 @@ const Exam = () => {
             </div>
         </div>
     );
+
 };
 
 export default Exam;

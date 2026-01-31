@@ -70,17 +70,7 @@ const Register = () => {
                         <input name="email" type="email" className="input-field" required value={formData.email} onChange={handleChange} />
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                        <div className="input-group" style={{ marginBottom: 0 }}>
-                            <label className="input-label">Área / Setor</label>
-                            <input name="setor" type="text" className="input-field" required value={formData.setor} onChange={handleChange} />
-                        </div>
-                        <div className="input-group" style={{ marginBottom: 0 }}>
-                            <label className="input-label">Idade</label>
-                            <input name="idade" type="number" className="input-field" required value={formData.idade} onChange={handleChange} />
-                        </div>
-                    </div>
-
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}> <div className="input-group" style={{ marginBottom: 0 }}> <label className="input-label">Área</label> <input name="setor" type="text" className="input-field" required value={formData.setor} onChange={handleChange} /> </div> <div className="input-group" style={{ marginBottom: 0 }}> <label className="input-label">Idade</label> <input name="idade" type="number" className="input-field" required value={formData.idade} onChange={handleChange} /> </div> </div>
                     <div className="input-group" style={{ marginBottom: 0 }}>
                         <label className="input-label">Congregação</label>
                         <input name="congregacao" type="text" className="input-field" required value={formData.congregacao} onChange={handleChange} />
