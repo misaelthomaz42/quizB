@@ -160,6 +160,10 @@ export const api = {
       const res = await fetch(`${API_URL}/admin/results`, { headers: api._adminHeader() });
       return await res.json();
     },
+    getAttemptAnswers: async (attemptId) => {
+      const res = await fetch(`${API_URL}/admin/results/${attemptId}/answers`, { headers: api._adminHeader() });
+      return await res.json();
+    },
     deleteResult: async (id) => {
       await fetch(`${API_URL}/admin/results/${id}`, {
         method: 'DELETE',

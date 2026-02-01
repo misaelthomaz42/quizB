@@ -17,8 +17,48 @@ const Register = () => {
     const { register } = useAuth();
     const navigate = useNavigate();
 
+    // Definir as congregações para cada área
+    const congregacoesPorArea = {
+        '12': [
+            'Alto Jordão',
+            'Córrego da Gameleira',
+            'Jardim Primavera',
+            'Alto Castelo Branco',
+            'Alto Castelo Branco 2',
+            'Alto da Esperança',
+            'Sudene',
+            'Xingu',
+            'Córrego da Jaqueira',
+            'Sonho Dourado',
+            'Jordão Baixo',
+            'Alto da Jaqueira'
+        ],
+        '32': [
+            'Abrigo Social I',
+            'Alto do Carneiro',
+            'Abrigo social 3',
+            'Areeiro 1',
+            'Areeiro 2',
+            'Areeiro 3',
+            'Boa vista',
+            'Jordão',
+            'Jordão2'
+        ]
+    };
+
     const handleChange = (e) => {
-        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+        const { name, value } = e.target;
+
+        // Se mudou a área, resetar a congregação
+        if (name === 'setor') {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value,
+                congregacao: '' // Resetar congregação quando mudar a área
+            }));
+        } else {
+            setFormData(prev => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -33,9 +73,6 @@ const Register = () => {
         setLoading(true);
         try {
             await register(formData);
-            // Auto login or redirect to login? Usually redirect to login or dashboard. 
-            // Plan didn't specify, but UX wise direct login is nice. 
-            // For now, redirect to login to keep flows distinct as user requested "Register Screen" -> "Login Screen".
             navigate('/login');
             alert('Cadastro realizado com sucesso! Faça login para continuar.');
         } catch (err) {
@@ -44,6 +81,9 @@ const Register = () => {
             setLoading(false);
         }
     };
+
+    // Obter lista de congregações baseada na área selecionada
+    const congregacoesDisponiveis = formData.setor ? congregacoesPorArea[formData.setor] || [] : [];
 
     return (
         <div className="flex-center" style={{ minHeight: '100vh', padding: '2rem 1rem' }}>
@@ -70,10 +110,49 @@ const Register = () => {
                         <input name="email" type="email" className="input-field" required value={formData.email} onChange={handleChange} />
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}> <div className="input-group" style={{ marginBottom: 0 }}> <label className="input-label">Área</label> <input name="setor" type="text" className="input-field" required value={formData.setor} onChange={handleChange} /> </div> <div className="input-group" style={{ marginBottom: 0 }}> <label className="input-label">Idade</label> <input name="idade" type="number" className="input-field" required value={formData.idade} onChange={handleChange} /> </div> </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        <div className="input-group" style={{ marginBottom: 0 }}>
+                            <label className="input-label">Área</label>
+                            <select
+                                name="setor"
+                                className="input-field"
+                                required
+                                value={formData.setor}
+                                onChange={handleChange}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <option value="">Selecione...</option>
+                                <option value="12">12</option>
+                                <option value="32">32</option>
+                            </select>
+                        </div>
+
+                        <div className="input-group" style={{ marginBottom: 0 }}>
+                            <label className="input-label">Idade</label>
+                            <input name="idade" type="number" className="input-field" required value={formData.idade} onChange={handleChange} />
+                        </div>
+                    </div>
+
                     <div className="input-group" style={{ marginBottom: 0 }}>
                         <label className="input-label">Congregação</label>
-                        <input name="congregacao" type="text" className="input-field" required value={formData.congregacao} onChange={handleChange} />
+                        <select
+                            name="congregacao"
+                            className="input-field"
+                            required
+                            value={formData.congregacao}
+                            onChange={handleChange}
+                            disabled={!formData.setor}
+                            style={{ cursor: formData.setor ? 'pointer' : 'not-allowed' }}
+                        >
+                            <option value="">
+                                {formData.setor ? 'Selecione...' : 'Primeiro selecione uma área'}
+                            </option>
+                            {congregacoesDisponiveis.map((congregacao, index) => (
+                                <option key={index} value={congregacao}>
+                                    {congregacao}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className="input-group" style={{ marginBottom: 0 }}>

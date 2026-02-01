@@ -183,6 +183,53 @@ router.get('/results', async (req, res) => {
     }
 });
 
+// Get User Answers for a specific attempt (for admin to view the exam)
+router.get('/results/:attemptId/answers', async (req, res) => {
+    try {
+        const sql = `
+            SELECT 
+                q.id,
+                q.question_text,
+                qo.id as option_id,
+                qo.option_text,
+                qo.is_correct,
+                ua.selected_option_id,
+                ua.is_correct as user_answer_correct
+            FROM exam_attempts ea
+            JOIN user_answers ua ON ea.id = ua.attempt_id
+            JOIN questions q ON ua.question_id = q.id
+            JOIN question_options qo ON q.id = qo.question_id
+            WHERE ea.id = ?
+            ORDER BY q.id, qo.id
+        `;
+        const [rows] = await db.query(sql, [req.params.attemptId]);
+
+        // Group by questions
+        const questionsMap = {};
+        rows.forEach(row => {
+            if (!questionsMap[row.id]) {
+                questionsMap[row.id] = {
+                    id: row.id,
+                    question_text: row.question_text,
+                    selected_option_id: row.selected_option_id,
+                    user_answer_correct: row.user_answer_correct,
+                    options: []
+                };
+            }
+            questionsMap[row.id].options.push({
+                id: row.option_id,
+                option_text: row.option_text,
+                is_correct: row.is_correct
+            });
+        });
+
+        res.json(Object.values(questionsMap));
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ message: 'Erro ao buscar respostas' });
+    }
+});
+
 // Delete Result
 router.delete('/results/:attemptId', async (req, res) => {
     try {

@@ -82,7 +82,7 @@ const UserManagement = () => {
                             <tr style={{ borderBottom: '2px solid #E5E7EB', textAlign: 'left' }}>
                                 <th className="p-2">Nome</th>
                                 <th className="p-2">Email</th>
-                                <th className="p-2">Role</th>
+                                <th className="p-2">Admin</th>
                                 <th className="p-2">Status</th>
                                 <th className="p-2">Ações</th>
                             </tr>
@@ -111,7 +111,7 @@ const UserManagement = () => {
                                     </td>
                                     <td className="p-2" style={{ display: 'flex', gap: '0.5rem' }}>
                                         <button onClick={() => handleToggleAdmin(u)} className="btn btn-outline" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}>
-                                            Role
+                                            Admin
                                         </button>
                                         <button onClick={() => handleBlock(u)} className="btn" style={{ background: '#F59E0B', color: 'white', padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}>
                                             {u.status === 'blocked' ? 'Desbloquear' : 'Bloquear'}
