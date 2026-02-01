@@ -186,6 +186,8 @@ router.get('/results', async (req, res) => {
 // Get User Answers for a specific attempt (for admin to view the exam)
 router.get('/results/:attemptId/answers', async (req, res) => {
     try {
+        console.log('🔍 Buscando respostas para attempt_id:', req.params.attemptId);
+
         const sql = `
             SELECT 
                 q.id,
@@ -194,7 +196,7 @@ router.get('/results/:attemptId/answers', async (req, res) => {
                 qo.option_text,
                 qo.is_correct,
                 ua.selected_option_id,
-                ua.is_correct as user_answer_correct
+                (qo.id = ua.selected_option_id AND qo.is_correct = 1) as user_answer_correct
             FROM exam_attempts ea
             JOIN user_answers ua ON ea.id = ua.attempt_id
             JOIN questions q ON ua.question_id = q.id
@@ -204,15 +206,26 @@ router.get('/results/:attemptId/answers', async (req, res) => {
         `;
         const [rows] = await db.query(sql, [req.params.attemptId]);
 
+        console.log(`📊 Encontradas ${rows.length} linhas`);
+
+        if (rows.length === 0) {
+            console.log('⚠️ Nenhuma resposta encontrada para este attempt_id');
+            return res.json([]);
+        }
+
         // Group by questions
         const questionsMap = {};
         rows.forEach(row => {
             if (!questionsMap[row.id]) {
+                // Determinar se o usuário acertou essa questão
+                const selectedOption = rows.find(r => r.id === row.id && r.option_id === row.selected_option_id);
+                const userAnswerCorrect = selectedOption ? selectedOption.is_correct : false;
+
                 questionsMap[row.id] = {
                     id: row.id,
                     question_text: row.question_text,
                     selected_option_id: row.selected_option_id,
-                    user_answer_correct: row.user_answer_correct,
+                    user_answer_correct: userAnswerCorrect,
                     options: []
                 };
             }
@@ -223,10 +236,13 @@ router.get('/results/:attemptId/answers', async (req, res) => {
             });
         });
 
-        res.json(Object.values(questionsMap));
+        const result = Object.values(questionsMap);
+        console.log(`✅ Retornando ${result.length} questões`);
+        res.json(result);
     } catch (e) {
-        console.error(e);
-        res.status(500).json({ message: 'Erro ao buscar respostas' });
+        console.error('❌ ERRO ao buscar respostas:', e.message);
+        console.error('Stack:', e.stack);
+        res.status(500).json({ message: 'Erro ao buscar respostas', error: e.message });
     }
 });
 
