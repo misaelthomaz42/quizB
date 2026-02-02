@@ -61,64 +61,117 @@ const UserManagement = () => {
         <div className="flex-col gap-4">
             {/* Create User Form */}
             <div className="glass-card">
-                <h3 className="mb-4 text-blue">Cadastrar Novo Usuário</h3>
-                <form onSubmit={handleCreateUser} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    <input name="nome" placeholder="Nome" className="input-field" required />
-                    <input name="email" placeholder="Email" className="input-field" required />
-                    <input name="setor" placeholder="Setor" className="input-field" required />
-                    <input name="congregacao" placeholder="Congregação" className="input-field" required />
-                    <input name="idade" placeholder="Idade" type="number" className="input-field" required />
-                    <input name="password" placeholder="Senha (Padrão: 123456)" className="input-field" />
-                    <button type="submit" className="btn btn-primary" style={{ gridColumn: 'span 2' }}>Adicionar Usuário</button>
+                <h3 className="mb-4 text-primary">Cadastrar Novo Usuário</h3>
+                <form onSubmit={handleCreateUser} className="flex-col gap-4">
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gap: '1rem',
+                        width: '100%'
+                    }}>
+                        <div className="input-group">
+                            <label className="input-label">Nome</label>
+                            <input name="nome" placeholder="Nome completo" className="input-field" required />
+                        </div>
+                        <div className="input-group">
+                            <label className="input-label">Email</label>
+                            <input name="email" type="email" placeholder="seu@email.com" className="input-field" required />
+                        </div>
+                        <div className="input-group">
+                            <label className="input-label">Área</label>
+                            <input name="setor" placeholder="Ex: 12" className="input-field" required />
+                        </div>
+                        <div className="input-group">
+                            <label className="input-label">Congregação</label>
+                            <input name="congregacao" placeholder="Nome da congregação" className="input-field" required />
+                        </div>
+                        <div className="input-group">
+                            <label className="input-label">Idade</label>
+                            <input name="idade" placeholder="Ex: 25" type="number" className="input-field" required />
+                        </div>
+                        <div className="input-group">
+                            <label className="input-label">Senha</label>
+                            <input name="password" placeholder="Senha (Padrão: 123456)" className="input-field" />
+                        </div>
+                    </div>
+                    <button type="submit" className="btn btn-primary w-full">Adicionar Novo Usuário</button>
                 </form>
             </div>
 
             <div className="glass-card animate-fade-in">
-                <h2 className="mb-4" style={{ fontSize: '1.5rem', color: 'var(--primary-dark)' }}>Gerenciar Usuários</h2>
+                <h2 className="mb-4 text-primary">Gerenciar Usuários</h2>
 
-                <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <div className="table-container">
+                    <table>
                         <thead>
-                            <tr style={{ borderBottom: '2px solid #E5E7EB', textAlign: 'left' }}>
-                                <th className="p-2">Nome</th>
-                                <th className="p-2">Email</th>
-                                <th className="p-2">Admin</th>
-                                <th className="p-2">Status</th>
-                                <th className="p-2">Ações</th>
+                            <tr>
+                                <th>Nome / Área</th>
+                                <th>Email</th>
+                                <th>Função</th>
+                                <th>Status</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
                             {users.map(u => (
-                                <tr key={u.id} style={{ borderBottom: '1px solid #F3F4F6' }}>
-                                    <td className="p-2">{u.nome} <br /><span className="text-sm text-gray-500">{u.setor}</span></td>
-                                    <td className="p-2">{u.email}</td>
-                                    <td className="p-2">
+                                <tr key={u.id}>
+                                    <td>
+                                        <div className="font-bold">{u.nome}</div>
+                                        <div className="text-sm text-light">Área {u.setor}</div>
+                                    </td>
+                                    <td>{u.email}</td>
+                                    <td>
                                         <span style={{
-                                            background: u.is_admin ? '#DBEAFE' : '#F3F4F6',
-                                            color: u.is_admin ? '#1E40AF' : '#374151',
-                                            padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.8rem'
+                                            background: u.is_admin ? 'rgba(37, 99, 235, 0.1)' : '#F3F4F6',
+                                            color: u.is_admin ? 'var(--primary)' : 'var(--text-light)',
+                                            padding: '0.25rem 0.5rem',
+                                            borderRadius: 'var(--radius-sm)',
+                                            fontSize: '0.8rem',
+                                            fontWeight: '600'
                                         }}>
-                                            {u.is_admin ? 'Admin' : 'User'}
+                                            {u.is_admin ? 'Admin' : 'Usuário'}
                                         </span>
                                     </td>
-                                    <td className="p-2">
+                                    <td>
                                         <span style={{
-                                            color: u.status === 'blocked' ? 'red' : 'green',
-                                            fontWeight: 'bold'
+                                            color: u.status === 'blocked' ? 'var(--danger)' : 'var(--success)',
+                                            fontWeight: '700',
+                                            fontSize: '0.9rem'
                                         }}>
                                             {u.status === 'blocked' ? 'Bloqueado' : 'Ativo'}
                                         </span>
                                     </td>
-                                    <td className="p-2" style={{ display: 'flex', gap: '0.5rem' }}>
-                                        <button onClick={() => handleToggleAdmin(u)} className="btn btn-outline" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}>
-                                            Admin
-                                        </button>
-                                        <button onClick={() => handleBlock(u)} className="btn" style={{ background: '#F59E0B', color: 'white', padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}>
-                                            {u.status === 'blocked' ? 'Desbloquear' : 'Bloquear'}
-                                        </button>
-                                        <button onClick={() => handleDelete(u.id)} className="btn" style={{ background: '#EF4444', color: 'white', padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}>
-                                            X
-                                        </button>
+                                    <td>
+                                        <div className="flex gap-2 wrap">
+                                            <button
+                                                onClick={() => handleToggleAdmin(u)}
+                                                className="btn btn-outline"
+                                                style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', width: 'auto' }}
+                                                title="Mudar cargo"
+                                            >
+                                                Cargo
+                                            </button>
+                                            <button
+                                                onClick={() => handleBlock(u)}
+                                                className="btn"
+                                                style={{
+                                                    background: u.status === 'blocked' ? 'var(--success)' : '#F59E0B',
+                                                    color: 'white',
+                                                    padding: '0.4rem 0.75rem',
+                                                    fontSize: '0.8rem',
+                                                    width: 'auto'
+                                                }}
+                                            >
+                                                {u.status === 'blocked' ? 'Ativar' : 'Bloquear'}
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(u.id)}
+                                                className="btn btn-danger"
+                                                style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', width: 'auto' }}
+                                            >
+                                                X
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

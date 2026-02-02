@@ -87,35 +87,36 @@ const Register = () => {
 
     return (
         <div className="flex-center" style={{ minHeight: '100vh', padding: '2rem 1rem' }}>
-            <div className="glass-card animate-fade-in" style={{ width: '100%', maxWidth: '500px' }}>
-                <h2 className="text-center" style={{ fontSize: '1.75rem', fontWeight: '700', marginBottom: '0.5rem', color: 'var(--primary-dark)' }}>Crie sua conta</h2>
-                <p className="text-center text-sm" style={{ marginBottom: '2rem', color: 'var(--text-light)' }}>
-                    Preencha seus dados para avaliar seus conhecimentos
+            <div className="glass-card animate-fade-in w-full" style={{ maxWidth: '540px' }}>
+                <h2 className="text-center mb-2 text-primary">Crie sua conta</h2>
+                <p className="text-center text-sm text-light mb-8">
+                    Preencha seus dados para realizar a avaliação
                 </p>
 
                 {error && (
-                    <div style={{ background: '#FEE2E2', color: '#B91C1C', padding: '0.75rem', borderRadius: '0.5rem', marginBottom: '1rem', fontSize: '0.875rem' }}>
+                    <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)', padding: '1rem', borderRadius: 'var(--radius-sm)', marginBottom: '1.5rem', fontSize: '0.9rem', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
                         {error}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="flex-col gap-4">
-                    <div className="input-group" style={{ marginBottom: 0 }}>
+                <form onSubmit={handleSubmit} className="flex-col gap-2">
+                    <div className="input-group">
                         <label className="input-label">Nome Completo</label>
-                        <input name="nome" type="text" className="input-field" required value={formData.nome} onChange={handleChange} />
+                        <input name="nome" type="text" className="input-field" required value={formData.nome} onChange={handleChange} placeholder="Seu nome completo" />
                     </div>
 
-                    <div className="input-group" style={{ marginBottom: 0 }}>
+                    <div className="input-group">
                         <label className="input-label">Email</label>
-                        <input name="email" type="email" className="input-field" required value={formData.email} onChange={handleChange} />
+                        <input name="email" type="email" className="input-field" required value={formData.email} onChange={handleChange} placeholder="seu@email.com" />
                     </div>
 
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                        gap: '1rem'
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                        gap: '1rem',
+                        width: '100%'
                     }}>
-                        <div className="input-group" style={{ marginBottom: 0 }}>
+                        <div className="input-group">
                             <label className="input-label">Área</label>
                             <select
                                 name="setor"
@@ -131,13 +132,13 @@ const Register = () => {
                             </select>
                         </div>
 
-                        <div className="input-group" style={{ marginBottom: 0 }}>
+                        <div className="input-group">
                             <label className="input-label">Idade</label>
-                            <input name="idade" type="number" className="input-field" required value={formData.idade} onChange={handleChange} />
+                            <input name="idade" type="number" className="input-field" required value={formData.idade} onChange={handleChange} placeholder="Ex: 25" />
                         </div>
                     </div>
 
-                    <div className="input-group" style={{ marginBottom: 0 }}>
+                    <div className="input-group">
                         <label className="input-label">Congregação</label>
                         <select
                             name="congregacao"
@@ -149,7 +150,7 @@ const Register = () => {
                             style={{ cursor: formData.setor ? 'pointer' : 'not-allowed' }}
                         >
                             <option value="">
-                                {formData.setor ? 'Selecione...' : 'Primeiro selecione uma área'}
+                                {formData.setor ? 'Selecione...' : 'Selecione uma área primeiro'}
                             </option>
                             {congregacoesDisponiveis.map((congregacao, index) => (
                                 <option key={index} value={congregacao}>
@@ -159,23 +160,30 @@ const Register = () => {
                         </select>
                     </div>
 
-                    <div className="input-group" style={{ marginBottom: 0 }}>
-                        <label className="input-label">Senha</label>
-                        <input name="password" type="password" className="input-field" required value={formData.password} onChange={handleChange} placeholder="••••••••" />
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                        gap: '1rem',
+                        width: '100%'
+                    }}>
+                        <div className="input-group">
+                            <label className="input-label">Senha</label>
+                            <input name="password" type="password" className="input-field" required value={formData.password} onChange={handleChange} placeholder="••••••••" />
+                        </div>
+
+                        <div className="input-group">
+                            <label className="input-label">Repita a Senha</label>
+                            <input name="confirmPassword" type="password" className="input-field" required value={formData.confirmPassword} onChange={handleChange} placeholder="••••••••" />
+                        </div>
                     </div>
 
-                    <div className="input-group" style={{ marginBottom: 0 }}>
-                        <label className="input-label">Repita a Senha</label>
-                        <input name="confirmPassword" type="password" className="input-field" required value={formData.confirmPassword} onChange={handleChange} placeholder="••••••••" />
-                    </div>
-
-                    <button type="submit" className="btn btn-primary w-full mt-4" disabled={loading}>
-                        {loading ? 'Cadastrando...' : 'Cadastrar'}
+                    <button type="submit" className="btn btn-primary w-full mt-6" disabled={loading} style={{ padding: '0.875rem' }}>
+                        {loading ? 'Cadastrando...' : 'Cadastrar conta'}
                     </button>
                 </form>
 
-                <div className="text-center mt-4 text-sm" style={{ color: 'var(--text-light)' }}>
-                    Já tem uma conta? <Link to="/login" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: '500' }}>Faça Login</Link>
+                <div className="text-center mt-6 text-sm text-light">
+                    Já tem uma conta? <Link to="/login" className="text-primary" style={{ textDecoration: 'none', fontWeight: '600' }}>Faça Login</Link>
                 </div>
             </div>
         </div>

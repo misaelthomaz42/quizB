@@ -142,44 +142,48 @@ const Exam = () => {
                 position: 'sticky',
                 top: '0.5rem',
                 zIndex: 100,
-                padding: '0.75rem',
+                padding: '0.75rem var(--spacing-4)',
                 display: 'flex',
                 justifyContent: 'center',
+                alignItems: 'center',
                 background: 'rgba(255, 255, 255, 0.98)',
                 marginBottom: '1.5rem',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                boxShadow: 'var(--shadow-md)',
+                borderRadius: 'var(--radius-sm)'
             }}>
                 <div style={{
-                    fontSize: 'clamp(1.5rem, 5vw, 2rem)',
-                    fontWeight: '700',
+                    fontSize: 'clamp(1.5rem, 6vw, 2.5rem)',
+                    fontWeight: '800',
                     fontFamily: 'monospace',
-                    color: timeLeft < 300 ? '#DC2626' : 'var(--primary)'
+                    color: timeLeft < 300 ? 'var(--danger)' : 'var(--primary)',
+                    letterSpacing: '1px'
                 }}>
                     {formatTime(timeLeft)}
                 </div>
             </div>
 
-            <div style={{ maxWidth: '800px', margin: '0 auto', paddingBottom: '4rem' }}>
+            <main style={{ maxWidth: '800px', margin: '0 auto', paddingBottom: '4rem' }}>
                 {questions.map((q, index) => (
-                    <div key={q.id} className="glass-card animate-fade-in" style={{ marginBottom: '1.5rem', animationDelay: `${index * 0.05}s` }}>
-                        <h3 style={{ marginBottom: '1rem', color: 'var(--text-main)', wordBreak: 'break-word' }}>
-                            {index + 1}. {q.text}
+                    <div key={q.id} className="glass-card animate-fade-in mb-4" style={{ animationDelay: `${index * 0.05}s` }}>
+                        <h3 className="mb-4" style={{ color: 'var(--text-main)', lineHeight: '1.4' }}>
+                            <span style={{ color: 'var(--primary)', marginRight: '0.5rem' }}>{index + 1}.</span>
+                            {q.text}
                         </h3>
-                        <div className="flex-col gap-4">
+                        <div className="flex-col gap-2">
                             {q.options.map((opt) => (
                                 <label
                                     key={opt}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        padding: 'clamp(0.75rem, 2vw, 1rem)',
-                                        borderRadius: '0.5rem',
-                                        border: '1px solid',
+                                        padding: '1rem',
+                                        borderRadius: 'var(--radius-sm)',
+                                        border: '2px solid',
                                         borderColor: answers[q.id] === opt ? 'var(--primary)' : '#E5E7EB',
-                                        background: answers[q.id] === opt ? '#EFF6FF' : 'white',
+                                        background: answers[q.id] === opt ? 'rgba(37, 99, 235, 0.05)' : 'white',
                                         cursor: 'pointer',
                                         transition: 'all 0.2s',
-                                        minHeight: '44px',
+                                        minHeight: '52px',
                                         wordBreak: 'break-word'
                                     }}
                                 >
@@ -190,37 +194,36 @@ const Exam = () => {
                                         checked={answers[q.id] === opt}
                                         onChange={() => handleAnswerSelect(q.id, opt)}
                                         style={{
-                                            marginRight: '0.75rem',
+                                            marginRight: '1rem',
                                             accentColor: 'var(--primary)',
-                                            transform: 'scale(1.2)',
-                                            minWidth: '20px',
-                                            minHeight: '20px',
+                                            width: '20px',
+                                            height: '20px',
                                             flexShrink: 0
                                         }}
                                     />
-                                    <span style={{ flex: 1 }}>{opt}</span>
+                                    <span style={{ fontSize: '1.05rem', fontWeight: answers[q.id] === opt ? '600' : '400' }}>
+                                        {opt}
+                                    </span>
                                 </label>
                             ))}
                         </div>
                     </div>
                 ))}
 
-                <div className="text-center mt-4">
+                <div className="text-center mt-8">
                     <button
                         onClick={() => handleSubmit(false)}
                         className="btn btn-primary"
                         style={{
-                            fontSize: 'clamp(1rem, 3vw, 1.25rem)',
-                            padding: 'clamp(0.75rem, 2vw, 1rem) clamp(2rem, 5vw, 4rem)',
-                            width: 'auto',
-                            minWidth: '200px',
-                            maxWidth: '100%'
+                            fontSize: '1.25rem',
+                            padding: '1rem 4rem',
+                            width: 'auto'
                         }}
                     >
-                        Enviar Prova
+                        Finalizar e Enviar
                     </button>
                 </div>
-            </div>
+            </main>
         </div>
     );
 

@@ -28,42 +28,33 @@ const AdminDashboard = () => {
 
     return (
         <div className="container" style={{ maxWidth: '1400px' }}>
-            <header style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '2rem',
-                padding: '1rem',
-                background: 'white',
-                borderRadius: '1rem',
-                boxShadow: 'var(--shadow-lg)'
-            }}>
+            <header className="glass-card flex-between wrap mb-8 mt-4" style={{ padding: '1.5rem' }}>
                 <div>
-                    <h1 style={{ color: 'var(--primary)', margin: 0 }}>Painel Administrativo</h1>
-                    <p style={{ color: 'var(--text-light)' }}>Logado como {user.nome}</p>
+                    <h1 className="m-0" style={{ color: 'var(--primary)', fontSize: '1.5rem' }}>Painel Administrativo</h1>
+                    <p className="text-light m-0">Administrador: {user.nome}</p>
                 </div>
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                    <button onClick={() => navigate('/')} className="btn btn-outline">Voltar ao App</button>
-                    <button onClick={() => { logout(); navigate('/login'); }} className="btn btn-primary">Sair</button>
+                <div className="flex gap-2">
+                    <button onClick={() => navigate('/')} className="btn btn-outline" style={{ padding: '0.6rem 1.25rem', fontSize: '0.9rem', width: 'auto' }}>Voltar</button>
+                    <button onClick={() => { logout(); navigate('/login'); }} className="btn btn-primary" style={{ padding: '0.6rem 1.25rem', fontSize: '0.9rem', width: 'auto' }}>Sair</button>
                 </div>
             </header>
 
-            <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
-                <nav className="glass-card" style={{
-                    width: '250px',
-                    height: 'fit-content',
-                    padding: '1rem',
-                    display: 'flex',
+            <div className="flex gap-4 admin-layout" style={{ display: 'flex' }}>
+                <nav className="glass-card flex gap-2 admin-nav" style={{
                     flexDirection: 'column',
-                    gap: '0.5rem'
+                    width: '280px',
+                    padding: '1rem',
+                    height: 'fit-content',
+                    position: 'sticky',
+                    top: '2rem'
                 }}>
                     <TabButton active={activeTab === 'users'} onClick={() => setActiveTab('users')}>Usuários</TabButton>
                     <TabButton active={activeTab === 'questions'} onClick={() => setActiveTab('questions')}>Questões</TabButton>
-                    <TabButton active={activeTab === 'control'} onClick={() => setActiveTab('control')}>Controle Quiz</TabButton>
-                    <TabButton active={activeTab === 'results'} onClick={() => setActiveTab('results')}>Resultados & Ranking</TabButton>
+                    <TabButton active={activeTab === 'control'} onClick={() => setActiveTab('control')}>Controle</TabButton>
+                    <TabButton active={activeTab === 'results'} onClick={() => setActiveTab('results')}>Resultados</TabButton>
                 </nav>
 
-                <main style={{ flex: 1, minWidth: '300px' }}>
+                <main style={{ flex: 1, width: '100%', overflow: 'hidden' }}>
                     {renderContent()}
                 </main>
             </div>
@@ -75,15 +66,17 @@ const TabButton = ({ active, onClick, children }) => (
     <button
         onClick={onClick}
         style={{
-            padding: '1rem',
+            padding: '0.875rem 1.25rem',
             textAlign: 'left',
-            background: active ? 'var(--primary)' : 'transparent',
+            background: active ? 'var(--primary)' : 'rgba(37, 99, 235, 0.05)',
             color: active ? 'white' : 'var(--text-main)',
             border: 'none',
-            borderRadius: '0.5rem',
+            borderRadius: 'var(--radius-sm)',
             cursor: 'pointer',
-            fontWeight: '500',
-            transition: 'all 0.2s'
+            fontWeight: '600',
+            transition: 'all 0.2s',
+            flexShrink: 0,
+            minWidth: '120px'
         }}
     >
         {children}

@@ -30,14 +30,14 @@ const Login = () => {
 
     return (
         <div className="flex-center" style={{ minHeight: '100vh', padding: '1rem' }}>
-            <div className="glass-card animate-fade-in" style={{ width: '100%', maxWidth: '400px' }}>
-                <h2 className="text-center" style={{ fontSize: '1.75rem', fontWeight: '700', marginBottom: '0.5rem', color: 'var(--primary-dark)' }}>Bem-vindo de volta</h2>
-                <p className="text-center text-sm" style={{ marginBottom: '2rem', color: 'var(--text-light)' }}>
-                    Entre com sua conta simulada
+            <div className="glass-card animate-fade-in w-full" style={{ maxWidth: '420px' }}>
+                <h2 className="text-center mb-2 text-primary">Bem-vindo de volta</h2>
+                <p className="text-center text-sm text-light mb-8">
+                    Entre com sua conta para realizar a avaliação
                 </p>
 
                 {error && (
-                    <div style={{ background: '#FEE2E2', color: '#B91C1C', padding: '0.75rem', borderRadius: '0.5rem', marginBottom: '1rem', fontSize: '0.875rem' }}>
+                    <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)', padding: '1rem', borderRadius: 'var(--radius-sm)', marginBottom: '1.5rem', fontSize: '0.9rem', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
                         {error}
                     </div>
                 )}
@@ -67,21 +67,24 @@ const Login = () => {
                         />
                     </div>
 
-                    <button
-                        type="button"
-                        onClick={handleForgotPassword}
-                        style={{ background: 'none', border: 'none', color: 'var(--primary)', fontSize: '0.875rem', cursor: 'pointer', marginBottom: '1.5rem' }}
-                    >
-                        Esqueceu a senha?
-                    </button>
+                    <div className="flex-between mb-8">
+                        <button
+                            type="button"
+                            onClick={handleForgotPassword}
+                            className="text-sm"
+                            style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontWeight: '500' }}
+                        >
+                            Esqueceu a senha?
+                        </button>
+                    </div>
 
-                    <button type="submit" className="btn btn-primary w-full" disabled={loading}>
+                    <button type="submit" className="btn btn-primary w-full" disabled={loading} style={{ padding: '0.875rem' }}>
                         {loading ? 'Entrando...' : 'Entrar'}
                     </button>
                 </form>
 
-                <div className="text-center mt-4 text-sm" style={{ color: 'var(--text-light)' }}>
-                    Não tem uma conta? <Link to="/register" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: '500' }}>Cadastre-se</Link>
+                <div className="text-center mt-6 text-sm text-light">
+                    Não tem uma conta? <Link to="/register" className="text-primary" style={{ textDecoration: 'none', fontWeight: '600' }}>Cadastre-se</Link>
                 </div>
             </div>
         </div>

@@ -53,55 +53,46 @@ const ResultsRanking = () => {
     return (
         <>
             <div className="glass-card">
-                <h2 className="mb-4 text-blue">Ranking de Resultados</h2>
-                <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <h2 className="mb-4 text-primary">Ranking de Resultados</h2>
+                <div className="table-container">
+                    <table>
                         <thead>
-                            <tr style={{ background: '#F3F4F6', textAlign: 'left' }}>
-                                <th className="p-2">Pos</th>
-                                <th className="p-2">Nome</th>
-                                <th className="p-2">Congregação</th>
-                                <th className="p-2">Nota</th>
-                                <th className="p-2">Tempo</th>
-                                <th className="p-2">Ações</th>
+                            <tr>
+                                <th>Pos</th>
+                                <th>Nome</th>
+                                <th>Congregação</th>
+                                <th>Nota</th>
+                                <th>Tempo</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
                             {results.map((r, idx) => (
-                                <tr key={r.attempt_id} style={{ borderBottom: '1px solid #E5E7EB' }}>
-                                    <td className="p-2 font-bold">#{idx + 1}</td>
-                                    <td className="p-2">{r.nome}</td>
-                                    <td className="p-2">{r.congregação}</td>
-                                    <td className="p-2" style={{ color: 'var(--primary)', fontWeight: 'bold' }}>
+                                <tr key={r.attempt_id}>
+                                    <td style={{ fontWeight: 'bold' }}>#{idx + 1}</td>
+                                    <td>{r.nome}</td>
+                                    <td>{r.congregação}</td>
+                                    <td style={{ color: 'var(--primary)', fontWeight: 'bold' }}>
                                         {r.score ? r.score : 0}
                                     </td>
-                                    <td className="p-2">{formatTime(r.duration_seconds)}</td>
-                                    <td className="p-2" style={{ display: 'flex', gap: '0.5rem' }}>
-                                        <button
-                                            onClick={() => handleViewAnswers(r)}
-                                            style={{
-                                                color: '#2563EB',
-                                                border: '1px solid #2563EB',
-                                                background: 'none',
-                                                cursor: 'pointer',
-                                                padding: '0.25rem 0.5rem',
-                                                borderRadius: '4px',
-                                                fontSize: '0.875rem'
-                                            }}
-                                        >
-                                            Ver Prova
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(r.attempt_id)}
-                                            style={{
-                                                color: 'red',
-                                                border: 'none',
-                                                background: 'none',
-                                                cursor: 'pointer'
-                                            }}
-                                        >
-                                            Excluir
-                                        </button>
+                                    <td>{formatTime(r.duration_seconds)}</td>
+                                    <td>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => handleViewAnswers(r)}
+                                                className="btn btn-outline"
+                                                style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem', width: 'auto' }}
+                                            >
+                                                Ver Prova
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(r.attempt_id)}
+                                                className="btn btn-danger"
+                                                style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem', width: 'auto' }}
+                                            >
+                                                Excluir
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
@@ -119,49 +110,49 @@ const ResultsRanking = () => {
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        background: 'rgba(0, 0, 0, 0.7)',
+                        background: 'rgba(0, 0, 0, 0.75)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         zIndex: 1000,
-                        padding: '2rem'
+                        padding: window.innerWidth > 768 ? '2rem' : '0'
                     }}
                     onClick={closeModal}
                 >
                     <div
                         className="glass-card"
                         style={{
-                            maxWidth: '800px',
+                            maxWidth: '900px',
                             width: '100%',
-                            maxHeight: '90vh',
+                            height: window.innerWidth > 768 ? '90vh' : '100vh',
+                            maxHeight: '100vh',
                             overflowY: 'auto',
-                            position: 'relative'
+                            position: 'relative',
+                            borderRadius: window.innerWidth > 768 ? 'var(--radius)' : '0',
+                            padding: 'var(--spacing-4)'
                         }}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div style={{ position: 'sticky', top: 0, background: 'white', paddingBottom: '1rem', borderBottom: '2px solid #E5E7EB', marginBottom: '1rem' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ position: 'sticky', top: 0, background: 'white', paddingBottom: '1rem', borderBottom: '2px solid #E5E7EB', marginBottom: '1.5rem', zIndex: 10 }}>
+                            <div className="flex-between wrap">
                                 <div>
-                                    <h2 style={{ color: 'var(--primary-dark)', marginBottom: '0.5rem' }}>
+                                    <h2 className="m-0" style={{ color: 'var(--primary-dark)' }}>
                                         Prova de {viewingAnswers.nome}
                                     </h2>
-                                    <p style={{ color: 'var(--text-light)', fontSize: '0.875rem' }}>
-                                        Nota: <strong style={{ color: 'var(--primary)' }}>{viewingAnswers.score}</strong> |
+                                    <p className="text-light m-0">
+                                        Nota: <strong className="text-primary">{viewingAnswers.score}</strong> |
                                         Tempo: <strong>{formatTime(viewingAnswers.duration_seconds)}</strong>
                                     </p>
                                 </div>
                                 <button
                                     onClick={closeModal}
+                                    className="btn btn-danger"
                                     style={{
-                                        background: '#EF4444',
-                                        color: 'white',
-                                        border: 'none',
+                                        width: '40px',
+                                        height: '40px',
+                                        padding: '0',
                                         borderRadius: '50%',
-                                        width: '2rem',
-                                        height: '2rem',
-                                        cursor: 'pointer',
-                                        fontSize: '1.25rem',
-                                        fontWeight: 'bold'
+                                        fontSize: '1.5rem'
                                     }}
                                 >
                                     ×
