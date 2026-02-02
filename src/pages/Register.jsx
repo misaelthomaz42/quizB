@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import Card from '../components/Card';
+import Button from '../components/Button';
+import Input from '../components/Input';
+import Alert from '../components/Alert';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -17,44 +21,25 @@ const Register = () => {
     const { register } = useAuth();
     const navigate = useNavigate();
 
-    // Definir as congregações para cada área
     const congregacoesPorArea = {
         '12': [
-            'Alto Jordão',
-            'Córrego da Gameleira',
-            'Jardim Primavera',
-            'Alto Castelo Branco',
-            'Alto Castelo Branco 2',
-            'Alto da Esperança',
-            'Sudene',
-            'Xingu',
-            'Córrego da Jaqueira',
-            'Sonho Dourado',
-            'Jordão Baixo',
-            'Alto da Jaqueira'
+            'Alto Jordão', 'Córrego da Gameleira', 'Jardim Primavera', 'Alto Castelo Branco',
+            'Alto Castelo Branco 2', 'Alto da Esperança', 'Sudene', 'Xingu',
+            'Córrego da Jaqueira', 'Sonho Dourado', 'Jordão Baixo', 'Alto da Jaqueira'
         ],
         '32': [
-            'Abrigo Social I',
-            'Alto do Carneiro',
-            'Abrigo social 3',
-            'Areeiro 1',
-            'Areeiro 2',
-            'Areeiro 3',
-            'Boa vista',
-            'Jordão',
-            'Jordão2'
+            'Abrigo Social I', 'Alto do Carneiro', 'Abrigo social 3', 'Areeiro 1',
+            'Areeiro 2', 'Areeiro 3', 'Boa vista', 'Jordão', 'Jordão2'
         ]
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
-        // Se mudou a área, resetar a congregação
         if (name === 'setor') {
             setFormData(prev => ({
                 ...prev,
                 [name]: value,
-                congregacao: '' // Resetar congregação quando mudar a área
+                congregacao: ''
             }));
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
@@ -73,8 +58,8 @@ const Register = () => {
         setLoading(true);
         try {
             await register(formData);
-            navigate('/login');
             alert('Cadastro realizado com sucesso! Faça login para continuar.');
+            navigate('/login');
         } catch (err) {
             setError(err.message);
         } finally {
@@ -82,42 +67,46 @@ const Register = () => {
         }
     };
 
-    // Obter lista de congregações baseada na área selecionada
     const congregacoesDisponiveis = formData.setor ? congregacoesPorArea[formData.setor] || [] : [];
 
     return (
-        <div className="flex-center" style={{ minHeight: '100vh', padding: '2rem 1rem' }}>
-            <div className="glass-card animate-fade-in w-full" style={{ maxWidth: '540px' }}>
-                <h2 className="text-center mb-2 text-primary">Crie sua conta</h2>
-                <p className="text-center text-sm text-light mb-8">
-                    Preencha seus dados para realizar a avaliação
-                </p>
+        <div className="flex-center" style={{ minHeight: '100vh', padding: '2.5rem 1rem' }}>
+            <Card style={{ maxWidth: '600px', width: '100%' }}>
+                <div className="text-center mb-8">
+                    <h1 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>Criar Conta</h1>
+                    <p className="text-light text-sm">Registre-se no sistema para iniciar suas provas</p>
+                </div>
 
-                {error && (
-                    <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)', padding: '1rem', borderRadius: 'var(--radius-sm)', marginBottom: '1.5rem', fontSize: '0.9rem', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                        {error}
-                    </div>
-                )}
+                {error && <Alert type="error">{error}</Alert>}
 
-                <form onSubmit={handleSubmit} className="flex-col gap-2">
-                    <div className="input-group">
-                        <label className="input-label">Nome Completo</label>
-                        <input name="nome" type="text" className="input-field" required value={formData.nome} onChange={handleChange} placeholder="Seu nome completo" />
-                    </div>
+                <form onSubmit={handleSubmit} className="flex-col gap-4">
+                    <Input
+                        label="Nome Completo"
+                        name="nome"
+                        value={formData.nome}
+                        onChange={handleChange}
+                        placeholder="Seu nome completo"
+                        required
+                    />
 
-                    <div className="input-group">
-                        <label className="input-label">Email</label>
-                        <input name="email" type="email" className="input-field" required value={formData.email} onChange={handleChange} placeholder="seu@email.com" />
-                    </div>
+                    <Input
+                        label="E-mail"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        placeholder="seu@email.com"
+                        required
+                    />
 
                     <div style={{
                         display: 'grid',
                         gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                        gap: '1rem',
+                        gap: '1.5rem',
                         width: '100%'
                     }}>
                         <div className="input-group">
-                            <label className="input-label">Área</label>
+                            <label className="input-label">Setor / Área</label>
                             <select
                                 name="setor"
                                 className="input-field"
@@ -127,15 +116,20 @@ const Register = () => {
                                 style={{ cursor: 'pointer' }}
                             >
                                 <option value="">Selecione...</option>
-                                <option value="12">12</option>
-                                <option value="32">32</option>
+                                <option value="12">Setor 12</option>
+                                <option value="32">Setor 32</option>
                             </select>
                         </div>
 
-                        <div className="input-group">
-                            <label className="input-label">Idade</label>
-                            <input name="idade" type="number" className="input-field" required value={formData.idade} onChange={handleChange} placeholder="Ex: 25" />
-                        </div>
+                        <Input
+                            label="Idade"
+                            name="idade"
+                            type="number"
+                            value={formData.idade}
+                            onChange={handleChange}
+                            placeholder="Ex: 25"
+                            required
+                        />
                     </div>
 
                     <div className="input-group">
@@ -150,42 +144,55 @@ const Register = () => {
                             style={{ cursor: formData.setor ? 'pointer' : 'not-allowed' }}
                         >
                             <option value="">
-                                {formData.setor ? 'Selecione...' : 'Selecione uma área primeiro'}
+                                {formData.setor ? 'Selecione a congregação...' : 'Selecione um setor primeiro'}
                             </option>
-                            {congregacoesDisponiveis.map((congregacao, index) => (
-                                <option key={index} value={congregacao}>
-                                    {congregacao}
-                                </option>
+                            {congregacoesDisponiveis.map((c, i) => (
+                                <option key={i} value={c}>{c}</option>
                             ))}
                         </select>
                     </div>
 
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                        gap: '1rem',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gap: '1.5rem',
                         width: '100%'
                     }}>
-                        <div className="input-group">
-                            <label className="input-label">Senha</label>
-                            <input name="password" type="password" className="input-field" required value={formData.password} onChange={handleChange} placeholder="••••••••" />
-                        </div>
+                        <Input
+                            label="Senha"
+                            name="password"
+                            type="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            placeholder="Crie sua senha"
+                            required
+                        />
 
-                        <div className="input-group">
-                            <label className="input-label">Repita a Senha</label>
-                            <input name="confirmPassword" type="password" className="input-field" required value={formData.confirmPassword} onChange={handleChange} placeholder="••••••••" />
-                        </div>
+                        <Input
+                            label="Confirmar Senha"
+                            name="confirmPassword"
+                            type="password"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            placeholder="Repita a senha"
+                            required
+                        />
                     </div>
 
-                    <button type="submit" className="btn btn-primary w-full mt-6" disabled={loading} style={{ padding: '0.875rem' }}>
-                        {loading ? 'Cadastrando...' : 'Cadastrar conta'}
-                    </button>
+                    <Button
+                        type="submit"
+                        loading={loading}
+                        className="w-full mt-4"
+                        style={{ padding: '1rem' }}
+                    >
+                        Finalizar e Cadastrar
+                    </Button>
                 </form>
 
-                <div className="text-center mt-6 text-sm text-light">
-                    Já tem uma conta? <Link to="/login" className="text-primary" style={{ textDecoration: 'none', fontWeight: '600' }}>Faça Login</Link>
+                <div className="text-center mt-8 text-sm text-light">
+                    Já possui um cadastro? <Link to="/login" className="text-primary" style={{ fontWeight: '700', textDecoration: 'none' }}>Entrar Agora</Link>
                 </div>
-            </div>
+            </Card>
         </div>
     );
 };

@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../services/api';
+import Card from '../../components/Card';
+import Button from '../../components/Button';
+import Input from '../../components/Input';
+import Alert from '../../components/Alert';
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     const loadUsers = async () => {
         try {
             const data = await api.admin.getUsers();
             setUsers(data);
         } catch (e) {
-            alert(e);
+            console.error(e);
         } finally {
             setLoading(false);
         }
@@ -38,139 +43,134 @@ const UserManagement = () => {
 
     const handleCreateUser = async (e) => {
         e.preventDefault();
+        setSubmitLoading(true);
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
-        // Default password for admin-created users or ask?
-        // Let's assume a default or input.
         if (!data.password) data.password = '123456';
 
         try {
-            await api.register(data); // Reuse public register or create specific admin endpoint? Public is fine or use api.admin.createUser if exists.
-            // Using public register for now as it does the job.
+            await api.register(data);
             alert('Usuário criado com sucesso!');
             e.target.reset();
             loadUsers();
         } catch (err) {
             alert('Erro ao criar: ' + err.message);
+        } finally {
+            setSubmitLoading(false);
         }
     };
 
-    if (loading) return <div>Carregando...</div>;
+    if (loading) return (
+        <div className="flex-center" style={{ padding: '3rem' }}>
+            <span className="loader" style={{ width: '32px', height: '32px', borderTopColor: 'var(--primary)' }}></span>
+        </div>
+    );
 
     return (
-        <div className="flex-col gap-4">
-            {/* Create User Form */}
-            <div className="glass-card">
-                <h3 className="mb-4 text-primary">Cadastrar Novo Usuário</h3>
+        <div className="flex-col gap-6">
+            <Card>
+                <h3 className="mb-6 text-primary">➕ Novo Usuário</h3>
                 <form onSubmit={handleCreateUser} className="flex-col gap-4">
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                        gap: '1rem',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                        gap: '1.25rem',
                         width: '100%'
                     }}>
-                        <div className="input-group">
-                            <label className="input-label">Nome</label>
-                            <input name="nome" placeholder="Nome completo" className="input-field" required />
-                        </div>
-                        <div className="input-group">
-                            <label className="input-label">Email</label>
-                            <input name="email" type="email" placeholder="seu@email.com" className="input-field" required />
-                        </div>
-                        <div className="input-group">
-                            <label className="input-label">Área</label>
-                            <input name="setor" placeholder="Ex: 12" className="input-field" required />
-                        </div>
-                        <div className="input-group">
-                            <label className="input-label">Congregação</label>
-                            <input name="congregacao" placeholder="Nome da congregação" className="input-field" required />
-                        </div>
-                        <div className="input-group">
-                            <label className="input-label">Idade</label>
-                            <input name="idade" placeholder="Ex: 25" type="number" className="input-field" required />
-                        </div>
-                        <div className="input-group">
-                            <label className="input-label">Senha</label>
-                            <input name="password" placeholder="Senha (Padrão: 123456)" className="input-field" />
-                        </div>
+                        <Input name="nome" label="Nome" placeholder="Nome completo" required />
+                        <Input name="email" label="E-mail" type="email" placeholder="seu@email.com" required />
+                        <Input name="setor" label="Setor" placeholder="Ex: 12" required />
+                        <Input name="congregacao" label="Congregação" placeholder="Nome da congregação" required />
+                        <Input name="idade" label="Idade" type="number" placeholder="Ex: 25" required />
+                        <Input name="password" label="Senha" placeholder="Padrão: 123456" />
                     </div>
-                    <button type="submit" className="btn btn-primary w-full">Adicionar Novo Usuário</button>
+                    <Button type="submit" loading={submitLoading} className="w-full">Criar Conta de Usuário</Button>
                 </form>
-            </div>
+            </Card>
 
-            <div className="glass-card animate-fade-in">
-                <h2 className="mb-4 text-primary">Gerenciar Usuários</h2>
+            <Card className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                <div className="flex-between wrap mb-6">
+                    <h3 className="text-primary">👥 Gerenciamento ({users.length})</h3>
+                </div>
 
                 <div className="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th>Nome / Área</th>
-                                <th>Email</th>
-                                <th>Função</th>
+                                <th>Nome / Setor</th>
+                                <th>E-mail</th>
+                                <th>Cargo</th>
                                 <th>Status</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {users.map(u => (
+                            {users.map((u, i) => (
                                 <tr key={u.id}>
                                     <td>
-                                        <div className="font-bold">{u.nome}</div>
+                                        <div style={{ fontWeight: '700' }}>{u.nome}</div>
                                         <div className="text-sm text-light">Área {u.setor}</div>
                                     </td>
                                     <td>{u.email}</td>
                                     <td>
                                         <span style={{
-                                            background: u.is_admin ? 'rgba(37, 99, 235, 0.1)' : '#F3F4F6',
-                                            color: u.is_admin ? 'var(--primary)' : 'var(--text-light)',
-                                            padding: '0.25rem 0.5rem',
+                                            background: u.is_admin ? 'var(--primary-soft)' : '#F1F5F9',
+                                            color: u.is_admin ? 'var(--primary)' : 'var(--text-secondary)',
+                                            padding: '0.25rem 0.6rem',
                                             borderRadius: 'var(--radius-sm)',
-                                            fontSize: '0.8rem',
-                                            fontWeight: '600'
+                                            fontSize: '0.75rem',
+                                            fontWeight: '700',
+                                            textTransform: 'uppercase'
                                         }}>
                                             {u.is_admin ? 'Admin' : 'Usuário'}
                                         </span>
                                     </td>
                                     <td>
-                                        <span style={{
-                                            color: u.status === 'blocked' ? 'var(--danger)' : 'var(--success)',
-                                            fontWeight: '700',
-                                            fontSize: '0.9rem'
-                                        }}>
-                                            {u.status === 'blocked' ? 'Bloqueado' : 'Ativo'}
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <span style={{
+                                                width: '8px',
+                                                height: '8px',
+                                                borderRadius: '50%',
+                                                background: u.status === 'blocked' ? 'var(--error)' : 'var(--success)'
+                                            }}></span>
+                                            <span style={{
+                                                fontSize: '0.9rem',
+                                                fontWeight: '600',
+                                                color: u.status === 'blocked' ? 'var(--error)' : 'var(--success)'
+                                            }}>
+                                                {u.status === 'blocked' ? 'Bloqueado' : 'Ativo'}
+                                            </span>
+                                        </div>
                                     </td>
                                     <td>
-                                        <div className="flex gap-2 wrap">
-                                            <button
+                                        <div className="flex gap-2">
+                                            <Button
                                                 onClick={() => handleToggleAdmin(u)}
-                                                className="btn btn-outline"
+                                                variant="outline"
                                                 style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', width: 'auto' }}
-                                                title="Mudar cargo"
                                             >
                                                 Cargo
-                                            </button>
-                                            <button
+                                            </Button>
+                                            <Button
                                                 onClick={() => handleBlock(u)}
-                                                className="btn"
+                                                variant="outline"
                                                 style={{
-                                                    background: u.status === 'blocked' ? 'var(--success)' : '#F59E0B',
-                                                    color: 'white',
                                                     padding: '0.4rem 0.75rem',
                                                     fontSize: '0.8rem',
-                                                    width: 'auto'
+                                                    width: 'auto',
+                                                    borderColor: u.status === 'blocked' ? 'var(--success)' : 'var(--warning)',
+                                                    color: u.status === 'blocked' ? 'var(--success)' : 'var(--warning)'
                                                 }}
                                             >
-                                                {u.status === 'blocked' ? 'Ativar' : 'Bloquear'}
-                                            </button>
-                                            <button
+                                                {u.status === 'blocked' ? 'Ativar' : 'Barrar'}
+                                            </Button>
+                                            <Button
                                                 onClick={() => handleDelete(u.id)}
-                                                className="btn btn-danger"
+                                                variant="danger"
                                                 style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', width: 'auto' }}
                                             >
-                                                X
-                                            </button>
+                                                Excluir
+                                            </Button>
                                         </div>
                                     </td>
                                 </tr>
@@ -178,7 +178,7 @@ const UserManagement = () => {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </Card>
         </div>
     );
 };

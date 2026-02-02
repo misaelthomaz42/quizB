@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import Card from '../components/Card';
+import Button from '../components/Button';
+import Input from '../components/Input';
+import Alert from '../components/Alert';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -25,68 +29,64 @@ const Login = () => {
     };
 
     const handleForgotPassword = () => {
-        alert('Funcionalidade de recuperação de senha simulada. Verifique seu e-mail (mock).');
+        alert('Funcionalidade de recuperação de senha simulada.');
     };
 
     return (
         <div className="flex-center" style={{ minHeight: '100vh', padding: '1rem' }}>
-            <div className="glass-card animate-fade-in w-full" style={{ maxWidth: '420px' }}>
-                <h2 className="text-center mb-2 text-primary">Bem-vindo de volta</h2>
-                <p className="text-center text-sm text-light mb-8">
-                    Entre com sua conta para realizar a avaliação
-                </p>
+            <Card style={{ maxWidth: '420px', width: '100%' }}>
+                <div className="text-center mb-8">
+                    <h1 style={{ fontSize: '1.75rem', marginBottom: '0.5rem' }}>Acesso ao Sistema</h1>
+                    <p className="text-light text-sm">Realize login para iniciar sua avaliação</p>
+                </div>
 
-                {error && (
-                    <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)', padding: '1rem', borderRadius: 'var(--radius-sm)', marginBottom: '1.5rem', fontSize: '0.9rem', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                        {error}
-                    </div>
-                )}
+                {error && <Alert type="error">{error}</Alert>}
 
                 <form onSubmit={handleSubmit}>
-                    <div className="input-group">
-                        <label className="input-label">Email</label>
-                        <input
-                            type="email"
-                            className="input-field"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="seu@email.com"
-                            required
-                        />
-                    </div>
+                    <Input
+                        label="E-mail"
+                        name="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="exemplo@email.com"
+                        required
+                    />
 
-                    <div className="input-group">
-                        <label className="input-label">Senha</label>
-                        <input
-                            type="password"
-                            className="input-field"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
-                            required
-                        />
-                    </div>
+                    <Input
+                        label="Senha"
+                        name="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Sua senha secreta"
+                        required
+                    />
 
                     <div className="flex-between mb-8">
                         <button
                             type="button"
                             onClick={handleForgotPassword}
-                            className="text-sm"
-                            style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', fontWeight: '500' }}
+                            className="text-primary text-sm"
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontWeight: '600' }}
                         >
-                            Esqueceu a senha?
+                            Esqueceu sua senha?
                         </button>
                     </div>
 
-                    <button type="submit" className="btn btn-primary w-full" disabled={loading} style={{ padding: '0.875rem' }}>
-                        {loading ? 'Entrando...' : 'Entrar'}
-                    </button>
+                    <Button
+                        type="submit"
+                        className="w-full"
+                        loading={loading}
+                    >
+                        Entrar na Conta
+                    </Button>
                 </form>
 
-                <div className="text-center mt-6 text-sm text-light">
-                    Não tem uma conta? <Link to="/register" className="text-primary" style={{ textDecoration: 'none', fontWeight: '600' }}>Cadastre-se</Link>
+                <div className="text-center mt-8 text-sm text-light">
+                    Não possui cadastro? <Link to="/register" className="text-primary" style={{ fontWeight: '700', textDecoration: 'none' }}>Crie uma conta aqui</Link>
                 </div>
-            </div>
+            </Card>
         </div>
     );
 };

@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../services/api';
+import Card from '../../components/Card';
+import Button from '../../components/Button';
+import Alert from '../../components/Alert';
 
 const ResultsRanking = () => {
     const [results, setResults] = useState([]);
@@ -30,15 +33,10 @@ const ResultsRanking = () => {
             const data = await api.admin.getAttemptAnswers(attempt.attempt_id);
             setAnswers(data);
         } catch (e) {
-            alert('Erro ao carregar respostas: ' + e.message);
+            alert('Erro ao carregar: ' + e.message);
         } finally {
             setLoadingAnswers(false);
         }
-    };
-
-    const closeModal = () => {
-        setViewingAnswers(null);
-        setAnswers([]);
     };
 
     const formatTime = (seconds) => {
@@ -48,19 +46,27 @@ const ResultsRanking = () => {
         return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     };
 
-    if (loading) return <div>Carregando...</div>;
+    if (loading) return (
+        <div className="flex-center" style={{ padding: '3rem' }}>
+            <span className="loader" style={{ width: '32px', height: '32px', borderTopColor: 'var(--primary)' }}></span>
+        </div>
+    );
 
     return (
-        <>
-            <div className="glass-card">
-                <h2 className="mb-4 text-primary">Ranking de Resultados</h2>
+        <div className="flex-col gap-6">
+            <Card>
+                <div className="flex-between wrap mb-6">
+                    <h3 className="text-primary">🏆 Ranking de Resultados</h3>
+                    <Button onClick={loadResults} variant="outline" style={{ width: 'auto', fontSize: '0.8rem' }}>Atualizar</Button>
+                </div>
+
                 <div className="table-container">
                     <table>
                         <thead>
                             <tr>
                                 <th>Pos</th>
                                 <th>Nome</th>
-                                <th>Congregação</th>
+                                <th>Área</th>
                                 <th>Nota</th>
                                 <th>Tempo</th>
                                 <th>Ações</th>
@@ -69,29 +75,34 @@ const ResultsRanking = () => {
                         <tbody>
                             {results.map((r, idx) => (
                                 <tr key={r.attempt_id}>
-                                    <td style={{ fontWeight: 'bold' }}>#{idx + 1}</td>
-                                    <td>{r.nome}</td>
-                                    <td>{r.congregação}</td>
-                                    <td style={{ color: 'var(--primary)', fontWeight: 'bold' }}>
-                                        {r.score ? r.score : 0}
+                                    <td style={{ fontWeight: '800', color: idx < 3 ? 'var(--warning)' : 'inherit' }}>
+                                        {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}
                                     </td>
-                                    <td>{formatTime(r.duration_seconds)}</td>
+                                    <td>
+                                        <div style={{ fontWeight: '600' }}>{r.nome}</div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{r.congregação}</div>
+                                    </td>
+                                    <td>Area {r.setor || '-'}</td>
+                                    <td>
+                                        <span style={{
+                                            background: 'var(--primary-soft)',
+                                            color: 'var(--primary)',
+                                            padding: '0.25rem 0.6rem',
+                                            borderRadius: '20px',
+                                            fontWeight: '800'
+                                        }}>
+                                            {r.score || 0}
+                                        </span>
+                                    </td>
+                                    <td style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{formatTime(r.duration_seconds)}</td>
                                     <td>
                                         <div className="flex gap-2">
-                                            <button
-                                                onClick={() => handleViewAnswers(r)}
-                                                className="btn btn-outline"
-                                                style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem', width: 'auto' }}
-                                            >
+                                            <Button onClick={() => handleViewAnswers(r)} variant="outline" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', width: 'auto' }}>
                                                 Ver Prova
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(r.attempt_id)}
-                                                className="btn btn-danger"
-                                                style={{ padding: '0.4rem 0.75rem', fontSize: '0.85rem', width: 'auto' }}
-                                            >
+                                            </Button>
+                                            <Button onClick={() => handleDelete(r.attempt_id)} variant="danger" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', width: 'auto' }}>
                                                 Excluir
-                                            </button>
+                                            </Button>
                                         </div>
                                     </td>
                                 </tr>
@@ -99,149 +110,78 @@ const ResultsRanking = () => {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </Card>
 
-            {/* Modal for viewing answers */}
             {viewingAnswers && (
-                <div
-                    style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: 'rgba(0, 0, 0, 0.75)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        zIndex: 1000,
-                        padding: window.innerWidth > 768 ? '2rem' : '0'
-                    }}
-                    onClick={closeModal}
-                >
-                    <div
-                        className="glass-card"
-                        style={{
-                            maxWidth: '900px',
-                            width: '100%',
-                            height: window.innerWidth > 768 ? '90vh' : '100vh',
-                            maxHeight: '100vh',
-                            overflowY: 'auto',
-                            position: 'relative',
-                            borderRadius: window.innerWidth > 768 ? 'var(--radius)' : '0',
-                            padding: 'var(--spacing-4)'
-                        }}
-                        onClick={(e) => e.stopPropagation()}
+                <div style={{
+                    position: 'fixed',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(15, 23, 42, 0.8)',
+                    backdropFilter: 'blur(8px)',
+                    zIndex: 2000,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '1.5rem'
+                }} onClick={() => setViewingAnswers(null)}>
+                    <Card
+                        style={{ maxWidth: '900px', width: '100%', maxHeight: '90vh', overflowY: 'auto', padding: '0' }}
+                        onClick={e => e.stopPropagation()}
                     >
-                        <div style={{ position: 'sticky', top: 0, background: 'white', paddingBottom: '1rem', borderBottom: '2px solid #E5E7EB', marginBottom: '1.5rem', zIndex: 10 }}>
+                        <div style={{ position: 'sticky', top: 0, background: 'white', padding: '1.5rem', borderBottom: '1px solid var(--border-light)', zIndex: 10 }}>
                             <div className="flex-between wrap">
                                 <div>
-                                    <h2 className="m-0" style={{ color: 'var(--primary-dark)' }}>
-                                        Prova de {viewingAnswers.nome}
-                                    </h2>
-                                    <p className="text-light m-0">
-                                        Nota: <strong className="text-primary">{viewingAnswers.score}</strong> |
-                                        Tempo: <strong>{formatTime(viewingAnswers.duration_seconds)}</strong>
-                                    </p>
+                                    <h2 className="m-0" style={{ fontSize: '1.25rem' }}>Prova: {viewingAnswers.nome}</h2>
+                                    <p className="text-light text-sm">Nota: <strong>{viewingAnswers.score}</strong> | Tempo: {formatTime(viewingAnswers.duration_seconds)}</p>
                                 </div>
-                                <button
-                                    onClick={closeModal}
-                                    className="btn btn-danger"
-                                    style={{
-                                        width: '40px',
-                                        height: '40px',
-                                        padding: '0',
-                                        borderRadius: '50%',
-                                        fontSize: '1.5rem'
-                                    }}
-                                >
-                                    ×
-                                </button>
+                                <Button onClick={() => setViewingAnswers(null)} variant="danger" style={{ width: '40px', height: '40px', padding: 0, borderRadius: '50%' }}>✕</Button>
                             </div>
                         </div>
 
-                        {loadingAnswers ? (
-                            <div style={{ textAlign: 'center', padding: '2rem' }}>Carregando respostas...</div>
-                        ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                                {answers.map((q, index) => (
-                                    <div
-                                        key={q.id}
-                                        style={{
-                                            padding: '1rem',
-                                            border: '1px solid #E5E7EB',
-                                            borderRadius: '8px',
-                                            background: q.user_answer_correct ? '#F0FDF4' : '#FEF2F2'
-                                        }}
-                                    >
-                                        <div style={{ marginBottom: '0.75rem' }}>
-                                            <strong style={{ color: 'var(--primary-dark)' }}>
-                                                Questão {index + 1}:
-                                            </strong>
-                                            <p style={{ marginTop: '0.5rem' }}>{q.question_text}</p>
-                                        </div>
-
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                            {q.options.map((opt) => {
+                        <div style={{ padding: '1.5rem' }} className="flex-col gap-6">
+                            {loadingAnswers ? (
+                                <div className="flex-center" style={{ padding: '2rem' }}><span className="loader" style={{ borderTopColor: 'var(--primary)' }}></span></div>
+                            ) : (
+                                answers.map((q, i) => (
+                                    <div key={i} style={{ paddingBottom: '1.5rem', borderBottom: i < answers.length - 1 ? '1px solid var(--border-light)' : 'none' }}>
+                                        <p style={{ fontWeight: '700', marginBottom: '1rem', color: 'var(--text-main)' }}>{i + 1}. {q.question_text}</p>
+                                        <div className="flex-col gap-2">
+                                            {q.options.map((opt, idx) => {
                                                 const isSelected = opt.id === q.selected_option_id;
                                                 const isCorrect = opt.is_correct;
-
-                                                let bgColor = '#F9FAFB';
-                                                let borderColor = '#E5E7EB';
-                                                let textColor = '#374151';
-
-                                                if (isSelected && isCorrect) {
-                                                    bgColor = '#DCFCE7';
-                                                    borderColor = '#22C55E';
-                                                    textColor = '#166534';
-                                                } else if (isSelected && !isCorrect) {
-                                                    bgColor = '#FEE2E2';
-                                                    borderColor = '#EF4444';
-                                                    textColor = '#991B1B';
-                                                } else if (!isSelected && isCorrect) {
-                                                    bgColor = '#E0F2FE';
-                                                    borderColor = '#0EA5E9';
-                                                    textColor = '#075985';
-                                                }
-
                                                 return (
                                                     <div
-                                                        key={opt.id}
+                                                        key={idx}
                                                         style={{
-                                                            padding: '0.75rem',
-                                                            background: bgColor,
-                                                            border: `2px solid ${borderColor}`,
-                                                            borderRadius: '6px',
-                                                            color: textColor,
+                                                            padding: '0.75rem 1rem',
+                                                            borderRadius: 'var(--radius-sm)',
+                                                            border: '1px solid',
+                                                            fontSize: '0.9rem',
+                                                            background: isSelected ? (isCorrect ? 'var(--success-soft)' : 'var(--error-soft)') : (isCorrect ? 'var(--primary-soft)' : 'white'),
+                                                            borderColor: isSelected ? (isCorrect ? 'var(--success)' : 'var(--error)') : (isCorrect ? 'var(--primary)' : 'var(--border-light)'),
+                                                            color: isSelected ? (isCorrect ? 'var(--success)' : 'var(--error)') : (isCorrect ? 'var(--primary)' : 'var(--text-secondary)'),
                                                             display: 'flex',
                                                             justifyContent: 'space-between',
-                                                            alignItems: 'center'
+                                                            fontWeight: (isSelected || isCorrect) ? '700' : '400'
                                                         }}
                                                     >
                                                         <span>{opt.option_text}</span>
-                                                        <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem', fontWeight: 'bold' }}>
-                                                            {isSelected && <span>✓ ESCOLHIDA</span>}
-                                                            {isCorrect && <span>✔ CORRETA</span>}
-                                                        </div>
+                                                        <span style={{ fontSize: '0.7rem' }}>
+                                                            {isSelected && 'ESCOLHIDA'}
+                                                            {isCorrect && ' | CORRETA ✓'}
+                                                        </span>
                                                     </div>
                                                 );
                                             })}
                                         </div>
-
-                                        <div style={{ marginTop: '0.75rem', fontSize: '0.875rem', fontWeight: 'bold' }}>
-                                            Resultado: {q.user_answer_correct ?
-                                                <span style={{ color: '#22C55E' }}>✓ Acertou</span> :
-                                                <span style={{ color: '#EF4444' }}>✗ Errou</span>
-                                            }
-                                        </div>
                                     </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                                ))
+                            )}
+                        </div>
+                    </Card>
                 </div>
             )}
-        </>
+        </div>
     );
 };
 

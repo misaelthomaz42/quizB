@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../services/api';
+import Card from '../../components/Card';
+import Button from '../../components/Button';
+import Input from '../../components/Input';
+import Alert from '../../components/Alert';
 
 const QuestionManagement = () => {
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [submitLoading, setSubmitLoading] = useState(false);
     const [newQ, setNewQ] = useState({
         text: '',
         options: ['', '', '', ''],
@@ -21,6 +26,7 @@ const QuestionManagement = () => {
 
     const handleAdd = async (e) => {
         e.preventDefault();
+        setSubmitLoading(true);
         const payload = {
             question_text: newQ.text,
             options: newQ.options.map((optText, idx) => ({
@@ -28,10 +34,16 @@ const QuestionManagement = () => {
                 is_correct: idx === parseInt(newQ.correctIndex)
             }))
         };
-        await api.admin.addQuestion(payload);
-        setNewQ({ text: '', options: ['', '', '', ''], correctIndex: 0 });
-        loadQuestions();
-        alert('Questão adicionada!');
+        try {
+            await api.admin.addQuestion(payload);
+            setNewQ({ text: '', options: ['', '', '', ''], correctIndex: 0 });
+            loadQuestions();
+            alert('Questão adicionada!');
+        } catch (e) {
+            alert('Erro ao adicionar: ' + e.message);
+        } finally {
+            setSubmitLoading(false);
+        }
     };
 
     const handleDelete = async (id) => {
@@ -40,42 +52,49 @@ const QuestionManagement = () => {
         loadQuestions();
     };
 
+    if (loading) return (
+        <div className="flex-center" style={{ padding: '3rem' }}>
+            <span className="loader" style={{ width: '32px', height: '32px', borderTopColor: 'var(--primary)' }}></span>
+        </div>
+    );
+
     return (
-        <div className="flex-col gap-4">
-            {/* Add Form */}
-            <div className="glass-card">
-                <h3 className="mb-4 text-primary">Adicionar Nova Questão</h3>
+        <div className="flex-col gap-6">
+            <Card>
+                <h3 className="mb-6 text-primary">📝 Nova Questão</h3>
                 <form onSubmit={handleAdd} className="flex-col gap-4">
                     <div className="input-group">
-                        <label className="input-label">Enunciado da Questão</label>
+                        <label className="input-label">Enunciado</label>
                         <textarea
                             className="input-field"
-                            style={{ minHeight: '100px', resize: 'vertical' }}
+                            style={{ minHeight: '120px', resize: 'vertical' }}
                             value={newQ.text}
                             onChange={e => setNewQ({ ...newQ, text: e.target.value })}
-                            placeholder="Digite o enunciado da questão aqui..."
+                            placeholder="Descreva a pergunta aqui..."
                             required
                         />
                     </div>
 
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
                         gap: '1.5rem'
                     }}>
                         {newQ.options.map((opt, idx) => (
                             <div key={idx} className="input-group">
                                 <label className="input-label flex-between">
-                                    <span>Opção {idx + 1}</span>
-                                    <label className="flex gap-2 text-sm cursor-pointer">
+                                    <span>Alternativa {idx + 1}</span>
+                                    <label className="flex gap-2 text-sm cursor-pointer items-center">
                                         <input
                                             type="radio"
                                             name="correctOpt"
                                             checked={parseInt(newQ.correctIndex) === idx}
                                             onChange={() => setNewQ({ ...newQ, correctIndex: idx })}
-                                            style={{ margin: 0 }}
+                                            style={{ width: '16px', height: '16px', accentColor: 'var(--success)' }}
                                         />
-                                        Correta
+                                        <span style={{ color: parseInt(newQ.correctIndex) === idx ? 'var(--success)' : 'inherit', fontWeight: '700' }}>
+                                            Correta
+                                        </span>
                                     </label>
                                 </label>
                                 <input
@@ -89,68 +108,55 @@ const QuestionManagement = () => {
                                     required
                                     placeholder={`Texto da opção ${idx + 1}`}
                                     style={{
-                                        borderColor: parseInt(newQ.correctIndex) === idx ? 'var(--success)' : '',
-                                        boxShadow: parseInt(newQ.correctIndex) === idx ? '0 0 0 2px rgba(16, 185, 129, 0.1)' : ''
+                                        borderColor: parseInt(newQ.correctIndex) === idx ? 'var(--success)' : 'var(--border-light)',
+                                        borderWidth: parseInt(newQ.correctIndex) === idx ? '2px' : '1px'
                                     }}
                                 />
                             </div>
                         ))}
                     </div>
-                    <button type="submit" className="btn btn-primary mt-4" style={{ padding: '1rem' }}>
-                        Salvar e Adicionar Questão
-                    </button>
+                    <Button type="submit" loading={submitLoading} className="w-full mt-4">Salvar Questão no Banco</Button>
                 </form>
-            </div>
+            </Card>
 
-            {/* List */}
-            <div className="glass-card">
-                <h3 className="mb-4 text-primary">Questões Existentes ({questions.length})</h3>
-                <div className="flex-col gap-4">
-                    {questions.map((q, index) => (
-                        <div key={q.id} className="animate-fade-in" style={{
-                            padding: '1.5rem',
-                            background: 'rgba(248, 250, 252, 0.8)',
-                            borderRadius: 'var(--radius-sm)',
-                            border: '1px solid #E2E8F0',
-                            animationDelay: `${index * 0.03}s`
-                        }}>
-                            <div className="flex-between wrap mb-4">
-                                <p style={{ fontWeight: '700', fontSize: '1.1rem', color: 'var(--primary-dark)', flex: 1 }}>
-                                    {index + 1}. {q.question_text}
-                                </p>
-                                <button
-                                    onClick={() => handleDelete(q.id)}
-                                    className="btn btn-danger"
-                                    style={{ padding: '0.5rem 1rem', width: 'auto', fontSize: '0.85rem' }}
-                                >
-                                    Excluir
-                                </button>
-                            </div>
-                            <div className="grid gap-2" style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                                gap: '0.75rem'
-                            }}>
-                                {q.options && q.options.map((opt, i) => (
-                                    <div
-                                        key={i}
-                                        style={{
-                                            padding: '0.75rem',
-                                            borderRadius: '6px',
-                                            fontSize: '0.9rem',
-                                            background: opt.is_correct ? 'rgba(16, 185, 129, 0.1)' : 'white',
-                                            border: opt.is_correct ? '1px solid var(--success)' : '1px solid #E2E8F0',
-                                            color: opt.is_correct ? 'var(--success)' : 'var(--text-main)',
-                                            fontWeight: opt.is_correct ? '600' : '400'
-                                        }}
-                                    >
-                                        {opt.option_text} {opt.is_correct && '✓'}
-                                    </div>
-                                ))}
-                            </div>
+            <div className="flex-col gap-4">
+                <h3 className="text-secondary" style={{ fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Questões Cadastradas ({questions.length})
+                </h3>
+                {questions.map((q, index) => (
+                    <Card key={q.id} className="animate-fade-in" style={{ animationDelay: `${index * 0.05}s` }}>
+                        <div className="flex-between wrap mb-4">
+                            <h4 style={{ color: 'var(--primary)', flex: 1, paddingRight: '1rem' }}>
+                                {index + 1}. {q.question_text}
+                            </h4>
+                            <Button onClick={() => handleDelete(q.id)} variant="danger" style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', width: 'auto' }}>
+                                Remover
+                            </Button>
                         </div>
-                    ))}
-                </div>
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                            gap: '0.75rem'
+                        }}>
+                            {q.options && q.options.map((opt, i) => (
+                                <div
+                                    key={i}
+                                    style={{
+                                        padding: '0.75rem 1rem',
+                                        borderRadius: 'var(--radius-sm)',
+                                        fontSize: '0.9rem',
+                                        background: opt.is_correct ? 'var(--success-soft)' : 'white',
+                                        border: `1px solid ${opt.is_correct ? 'var(--success)' : 'var(--border-light)'}`,
+                                        color: opt.is_correct ? 'var(--success)' : 'var(--text-secondary)',
+                                        fontWeight: opt.is_correct ? '700' : '500'
+                                    }}
+                                >
+                                    {opt.option_text} {opt.is_correct && '✓'}
+                                </div>
+                            ))}
+                        </div>
+                    </Card>
+                ))}
             </div>
         </div>
     );
