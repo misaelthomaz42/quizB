@@ -140,16 +140,21 @@ const Exam = () => {
             {/* Sticky Header with Timer */}
             <div className="glass-card" style={{
                 position: 'sticky',
-                top: '1rem',
+                top: '0.5rem',
                 zIndex: 100,
-                padding: '1rem',
+                padding: '0.75rem',
                 display: 'flex',
                 justifyContent: 'center',
                 background: 'rgba(255, 255, 255, 0.98)',
-                marginBottom: '2rem',
+                marginBottom: '1.5rem',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
             }}>
-                <div style={{ fontSize: '2rem', fontWeight: '700', fontFamily: 'monospace', color: timeLeft < 300 ? '#DC2626' : 'var(--primary)' }}>
+                <div style={{
+                    fontSize: 'clamp(1.5rem, 5vw, 2rem)',
+                    fontWeight: '700',
+                    fontFamily: 'monospace',
+                    color: timeLeft < 300 ? '#DC2626' : 'var(--primary)'
+                }}>
                     {formatTime(timeLeft)}
                 </div>
             </div>
@@ -157,7 +162,7 @@ const Exam = () => {
             <div style={{ maxWidth: '800px', margin: '0 auto', paddingBottom: '4rem' }}>
                 {questions.map((q, index) => (
                     <div key={q.id} className="glass-card animate-fade-in" style={{ marginBottom: '1.5rem', animationDelay: `${index * 0.05}s` }}>
-                        <h3 style={{ marginBottom: '1rem', color: 'var(--text-main)' }}>
+                        <h3 style={{ marginBottom: '1rem', color: 'var(--text-main)', wordBreak: 'break-word' }}>
                             {index + 1}. {q.text}
                         </h3>
                         <div className="flex-col gap-4">
@@ -167,13 +172,15 @@ const Exam = () => {
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
-                                        padding: '1rem',
+                                        padding: 'clamp(0.75rem, 2vw, 1rem)',
                                         borderRadius: '0.5rem',
                                         border: '1px solid',
                                         borderColor: answers[q.id] === opt ? 'var(--primary)' : '#E5E7EB',
                                         background: answers[q.id] === opt ? '#EFF6FF' : 'white',
                                         cursor: 'pointer',
-                                        transition: 'all 0.2s'
+                                        transition: 'all 0.2s',
+                                        minHeight: '44px',
+                                        wordBreak: 'break-word'
                                     }}
                                 >
                                     <input
@@ -182,9 +189,16 @@ const Exam = () => {
                                         value={opt}
                                         checked={answers[q.id] === opt}
                                         onChange={() => handleAnswerSelect(q.id, opt)}
-                                        style={{ marginRight: '1rem', accentColor: 'var(--primary)', transform: 'scale(1.2)' }}
+                                        style={{
+                                            marginRight: '0.75rem',
+                                            accentColor: 'var(--primary)',
+                                            transform: 'scale(1.2)',
+                                            minWidth: '20px',
+                                            minHeight: '20px',
+                                            flexShrink: 0
+                                        }}
                                     />
-                                    {opt}
+                                    <span style={{ flex: 1 }}>{opt}</span>
                                 </label>
                             ))}
                         </div>
@@ -195,7 +209,13 @@ const Exam = () => {
                     <button
                         onClick={() => handleSubmit(false)}
                         className="btn btn-primary"
-                        style={{ fontSize: '1.25rem', padding: '1rem 4rem' }}
+                        style={{
+                            fontSize: 'clamp(1rem, 3vw, 1.25rem)',
+                            padding: 'clamp(0.75rem, 2vw, 1rem) clamp(2rem, 5vw, 4rem)',
+                            width: 'auto',
+                            minWidth: '200px',
+                            maxWidth: '100%'
+                        }}
                     >
                         Enviar Prova
                     </button>

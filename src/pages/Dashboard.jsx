@@ -36,19 +36,42 @@ const Dashboard = () => {
 
     return (
         <div className="container">
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
-                <h1 style={{ color: 'var(--primary-dark)', fontSize: '1.5rem' }}>Sistema de Avaliação</h1>
-                <div style={{ display: 'flex', gap: '1rem' }}>
+            <header style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '2rem',
+                flexWrap: 'wrap',
+                gap: '1rem'
+            }}>
+                <h1 style={{ color: 'var(--primary-dark)', fontSize: '1.5rem', margin: 0 }}>Sistema de Avaliação</h1>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     {user.is_admin && (
                         <button
                             onClick={() => navigate('/admin')}
                             className="btn"
-                            style={{ background: 'var(--primary-dark)', color: 'white', padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+                            style={{
+                                background: 'var(--primary-dark)',
+                                color: 'white',
+                                padding: '0.5rem 1rem',
+                                fontSize: '0.9rem',
+                                width: 'auto',
+                                minWidth: '120px'
+                            }}
                         >
                             Painel Admin
                         </button>
                     )}
-                    <button onClick={handleLogout} className="btn btn-outline" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+                    <button
+                        onClick={handleLogout}
+                        className="btn btn-outline"
+                        style={{
+                            padding: '0.5rem 1rem',
+                            fontSize: '0.9rem',
+                            width: 'auto',
+                            minWidth: '80px'
+                        }}
+                    >
                         Sair
                     </button>
                 </div>
@@ -69,7 +92,7 @@ const Dashboard = () => {
                         <button
                             onClick={handleStartExam}
                             className="btn btn-primary"
-                            style={{ fontSize: '1.2rem', padding: '1rem 3rem' }}
+                            style={{ fontSize: '1.2rem', padding: '1rem 3rem', width: 'auto', minWidth: '200px' }}
                         >
                             INICIAR PROVA
                         </button>

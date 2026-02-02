@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --primary: #2563EB; /* Premium Blue */
+  --primary: #2563EB;
+  /* Premium Blue */
   --primary-dark: #1E40AF;
   --secondary: #FFFFFF;
   --text-main: #1F2937;
@@ -123,22 +124,176 @@ body {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-.text-center { text-align: center; }
-.mb-4 { margin-bottom: 1rem; }
-.mt-4 { margin-top: 1rem; }
-.w-full { width: 100%; }
-.flex-center { display: flex; justify-content: center; align-items: center; }
-.flex-col { display: flex; flex-direction: column; }
-.gap-4 { gap: 1rem; }
-.text-sm { font-size: 0.875rem; }
-.text-blue { color: var(--primary); }
+.text-center {
+  text-align: center;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-blue {
+  color: var(--primary);
+}
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in {
   animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+
+  /* Container adjustments */
+  .container {
+    padding: 1rem;
+    max-width: 100%;
+  }
+
+  /* Glass card spacing */
+  .glass-card {
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+  }
+
+  /* Button improvements for touch */
+  .btn {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.95rem;
+    min-height: 44px;
+    /* Minimum touch target size */
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Input fields */
+  .input-field {
+    font-size: 16px;
+    /* Prevents zoom on iOS */
+    padding: 0.875rem;
+  }
+
+  /* Typography scaling */
+  h1 {
+    font-size: 1.5rem !important;
+  }
+
+  h2 {
+    font-size: 1.25rem !important;
+  }
+
+  h3 {
+    font-size: 1.1rem !important;
+  }
+
+  /* Utility adjustments */
+  .text-center {
+    text-align: center;
+  }
+
+  /* Improve touch targets */
+  label {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  input[type="radio"],
+  input[type="checkbox"] {
+    min-width: 20px;
+    min-height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  /* Extra small screens */
+  .container {
+    padding: 0.75rem;
+  }
+
+  .glass-card {
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Typography for very small screens */
+  h1 {
+    font-size: 1.25rem !important;
+  }
+
+  h2 {
+    font-size: 1.1rem !important;
+  }
+
+  h3 {
+    font-size: 1rem !important;
+  }
+
+  /* Smaller gaps */
+  .gap-4 {
+    gap: 0.75rem;
+  }
+}
+
+/* Tablet landscape optimization */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    padding: 1.5rem;
+    max-width: 900px;
+  }
+}
+
+/* Prevent horizontal scroll on mobile */
+body {
+  overflow-x: hidden;
+}
+
+/* Improve scrolling on iOS */
+* {
+  -webkit-overflow-scrolling: touch;
 }

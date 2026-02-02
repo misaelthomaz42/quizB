@@ -110,7 +110,11 @@ const Register = () => {
                         <input name="email" type="email" className="input-field" required value={formData.email} onChange={handleChange} />
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gap: '1rem'
+                    }}>
                         <div className="input-group" style={{ marginBottom: 0 }}>
                             <label className="input-label">Área</label>
                             <select

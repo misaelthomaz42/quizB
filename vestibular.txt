@@ -75,7 +75,31 @@ Jordão Baixo
 Alto da Jaqueira
 
 
+Quero que o campo área tenhha apenas 2 opcoes [12,32] , 
+se  o usuario escolher area 12 entao as seguintes congregacoes serao exibidas:
+Alto Jordão
+Córrego da Gameleira
+Jardim Primavera
+Alto Castelo Branco
+Alto Castelo Branco 2
+Alto da Esperança
+Sudene
+Xingu
+Córrego da Jaqueira
+Sonho Dourado
+Jordão Baixo
+Alto da Jaqueira
 
+Se o usuario escolher area 32 as seguintes congregacoes serao possivel escolher:
+Abrigo Social I
+Alto do Carneiro
+Abrigo social 3
+Areeiro 1
+Areeiro 2
+Areeiro 3
+Boa vista
+Jordão
+Jordão2
 
 
 Need some updates on app. 
