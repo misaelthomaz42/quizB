@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/misael';
+const API_URL = import.meta.env.VITE_API_URL || 'https://vestibular-api.onrender.com/api/misael';
 console.log('🔗 API_URL em uso:', API_URL);
 
 export const api = {
