@@ -6,7 +6,9 @@ const router = express.Router();
 // Get Random Questions
 router.get('/questions', async (req, res) => {
     try {
-        const [questions] = await db.query('SELECT * FROM questions ORDER BY RAND() LIMIT 10');
+        // Updated: Order by creation date (newest first) instead of random
+        // Updated: Order by creation date (oldest first)
+        const [questions] = await db.query('SELECT * FROM questions ORDER BY id ASC LIMIT 10');
 
         const questionIds = questions.map(q => q.id);
         if (questionIds.length === 0) return res.json({ questions: [] });
@@ -33,27 +35,26 @@ router.post('/start', async (req, res) => {
         // 1. Check if Quiz is Globally Active
         const [settings] = await db.query("SELECT setting_value FROM system_settings WHERE setting_key = 'quiz_active'");
         if (settings.length > 0 && settings[0].setting_value === 'false') {
-            // If user is admin (optional check), maybe allow? But spec says admin starts/stops.
-            // Let's block everyone if false.
             return res.status(403).json({ message: 'A prova está pausada pelo administrador.' });
         }
 
+        // 2. Check for ANY existing attempt for this user
         const [attempts] = await db.query('SELECT * FROM exam_attempts WHERE user_id = ? ORDER BY start_time DESC LIMIT 1', [userId]);
 
         if (attempts.length > 0) {
             const lastAttempt = attempts[0];
-            if (lastAttempt.status === 'submitted') {
-                return res.json({ status: 'submitted' });
-            }
-            if (lastAttempt.status === 'blocked') {
-                return res.json({ status: 'blocked' });
-            }
+            // If they already finished or were blocked, don't allow a new one
+            if (lastAttempt.status === 'submitted') return res.json({ status: 'submitted' });
+            if (lastAttempt.status === 'blocked') return res.json({ status: 'blocked' });
+
+            // If they have one 'in_progress', we REUSE it instead of creating a new one
         } else {
-            await db.query('INSERT INTO exam_attempts (user_id) VALUES (?)', [userId]);
+            // Only create if NO attempt exists at all
+            await db.query('INSERT INTO exam_attempts (user_id, status) VALUES (?, "in_progress")', [userId]);
         }
 
-        // Fetch 10 Random Questions
-        const [questions] = await db.query('SELECT * FROM questions ORDER BY RAND() LIMIT 10');
+        // 3. Fetch Questions (Order by ID ASC)
+        const [questions] = await db.query('SELECT * FROM questions ORDER BY id ASC LIMIT 10');
         const questionIds = questions.map(q => q.id);
         let formattedQuestions = [];
 
@@ -130,15 +131,91 @@ router.post('/block', async (req, res) => {
 // Status
 router.get('/status/:userId', async (req, res) => {
     try {
-        const [attempts] = await db.query('SELECT * FROM exam_attempts WHERE user_id = ? ORDER BY start_time DESC LIMIT 1', [req.params.userId]);
+        const [attempts] = await db.query(`
+            SELECT *, 
+            TIMESTAMPDIFF(SECOND, start_time, end_time) as duration_seconds 
+            FROM exam_attempts 
+            WHERE user_id = ? 
+            ORDER BY start_time DESC LIMIT 1
+        `, [req.params.userId]);
+
         if (attempts.length === 0) return res.json({});
 
         const last = attempts[0];
-        if (last.status === 'submitted') return res.json({ submitted: true });
+        if (last.status === 'submitted') {
+            // Calculate correct answers based on score (0.5 points per question)
+            const correctCount = last.score / 0.5;
+
+            // Get total questions answered in this attempt
+            const [answers] = await db.query('SELECT COUNT(*) as total FROM user_answers WHERE attempt_id = ?', [last.id]);
+            const totalAnswered = answers[0].total;
+
+            return res.json({
+                submitted: true,
+                score: last.score,
+                correct: correctCount,
+                wrong: totalAnswered - correctCount,
+                total: totalAnswered,
+                startTime: last.start_time,
+                endTime: last.end_time,
+                duration: last.duration_seconds,
+                attemptId: last.id
+            });
+        }
         if (last.status === 'blocked') return res.json({ blocked: true });
         return res.json({ started: true });
     } catch (error) {
-        res.status(500).json({ message: 'Erro' });
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao buscar status' });
+    }
+});
+
+// Get User Answers for personal view
+router.get('/results/user/:userId', async (req, res) => {
+    try {
+        const [attempts] = await db.query('SELECT id FROM exam_attempts WHERE user_id = ? AND status = "submitted" ORDER BY start_time DESC LIMIT 1', [req.params.userId]);
+
+        if (attempts.length === 0) return res.status(404).json({ message: 'Nenhuma prova finalizada encontrada.' });
+
+        const attemptId = attempts[0].id;
+
+        const sql = `
+            SELECT 
+                q.id,
+                q.question_text,
+                qo.id as option_id,
+                qo.option_text,
+                qo.is_correct,
+                ua.selected_option_id
+            FROM user_answers ua
+            JOIN questions q ON ua.question_id = q.id
+            JOIN question_options qo ON q.id = qo.question_id
+            WHERE ua.attempt_id = ?
+            ORDER BY q.id, qo.id
+        `;
+        const [rows] = await db.query(sql, [attemptId]);
+
+        // Group by questions
+        const questionsMap = {};
+        rows.forEach(row => {
+            if (!questionsMap[row.id]) {
+                questionsMap[row.id] = {
+                    id: row.id,
+                    question_text: row.question_text,
+                    selected_option_id: row.selected_option_id,
+                    options: []
+                };
+            }
+            questionsMap[row.id].options.push({
+                id: row.option_id,
+                option_text: row.option_text,
+                is_correct: row.is_correct
+            });
+        });
+
+        res.json(Object.values(questionsMap));
+    } catch (e) {
+        res.status(500).json({ message: 'Erro ao buscar respostas' });
     }
 });
 

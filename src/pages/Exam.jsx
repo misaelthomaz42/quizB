@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import Card from '../components/Card';
@@ -12,41 +12,53 @@ const Exam = () => {
     const [isBlocked, setIsBlocked] = useState(false);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    const isSubmittingRef = useRef(false);
     const navigate = useNavigate();
 
     const handleSubmit = useCallback(async (forced = false) => {
-        if (!forced && !window.confirm('Deseja realmente finalizar sua prova?')) return;
+        if (isSubmittingRef.current) return;
 
+        isSubmittingRef.current = true;
         setSubmitting(true);
         try {
-            const formattedAnswers = Object.entries(answers).map(([qId, optionText]) => ({
-                question_id: parseInt(qId),
-                option_text: optionText
-            }));
-            await api.submitExam(formattedAnswers);
-            alert('Prova enviada com sucesso!');
+            await api.submitExam(answers);
             navigate('/');
         } catch (e) {
-            alert('Erro ao enviar: ' + e.message);
-        } finally {
+            isSubmittingRef.current = false;
             setSubmitting(false);
+            alert('Erro ao enviar: ' + e.message);
         }
     }, [answers, navigate]);
 
     useEffect(() => {
         const fetchQuestions = async () => {
             try {
-                const data = await api.getQuestions();
-                setQuestions(data);
+                const data = await api.startExam();
+                if (data.status === 'submitted') {
+                    alert('Você já enviou esta prova.');
+                    navigate('/');
+                    return;
+                }
+                setQuestions(data.questions);
             } catch (e) {
-                alert('Erro ao carregar questões');
+                alert(e.message || 'Erro ao carregar questões');
+                navigate('/');
             } finally {
                 setLoading(false);
             }
         };
         fetchQuestions();
+    }, [navigate]);
+
+    useEffect(() => {
+        const handleSecurity = () => {
+            if (isSubmittingRef.current) return;
+            setIsBlocked(true);
+            api.logCheat('User tried to switch tab or leave fullscreen');
+        };
 
         const timer = setInterval(() => {
+            if (isSubmittingRef.current) return;
             setTimeLeft(prev => {
                 if (prev <= 1) {
                     clearInterval(timer);
@@ -56,11 +68,6 @@ const Exam = () => {
                 return prev - 1;
             });
         }, 1000);
-
-        const handleSecurity = () => {
-            setIsBlocked(true);
-            api.logCheat('User tried to switch tab or leave fullscreen');
-        };
 
         window.addEventListener('blur', handleSecurity);
         window.addEventListener('visibilitychange', () => {

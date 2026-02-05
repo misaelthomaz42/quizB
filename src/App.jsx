@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Exam from './pages/Exam';
+import Review from './pages/Review';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -29,6 +30,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <Exam />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/revisao"
+            element={
+              <ProtectedRoute>
+                <Review />
               </ProtectedRoute>
             }
           />

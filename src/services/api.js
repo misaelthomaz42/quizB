@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'https://vestibular-api.onrender.com/api/misael';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/misael';
 console.log('🔗 API_URL em uso:', API_URL);
 
 export const api = {
@@ -35,6 +35,13 @@ export const api = {
 
   getCurrentUser: () => {
     return JSON.parse(localStorage.getItem('biblical_app_user'));
+  },
+
+  getQuestions: async () => {
+    const response = await fetch(`${API_URL}/questions`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Erro ao carregar questões');
+    return data.questions;
   },
 
   startExam: async () => {
@@ -81,6 +88,14 @@ export const api = {
     }
   },
 
+  getUserResults: async () => {
+    const user = api.getCurrentUser();
+    if (!user) return null;
+    const response = await fetch(`${API_URL}/results/user/${user.id}`);
+    if (!response.ok) throw new Error('Erro ao buscar resultados');
+    return await response.json();
+  },
+
   blockUser: async () => {
     const user = api.getCurrentUser();
     if (!user) return;
@@ -98,6 +113,23 @@ export const api = {
       user.status = 'blocked';
       localStorage.setItem('biblical_app_user', JSON.stringify(user));
     } catch (e) { console.error(e); }
+  },
+
+  logCheat: async (reason) => {
+    const user = api.getCurrentUser();
+    if (!user) return;
+
+    try {
+      await fetch(`${API_URL}/block`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, reason }),
+      });
+      // Apenas registramos no console, o bloqueio real é processado pelo servidor
+      console.warn('Cheat attempt logged:', reason);
+    } catch (e) {
+      console.error('Error logging cheat:', e);
+    }
   },
 
   // --- ADMIN METHODS ---

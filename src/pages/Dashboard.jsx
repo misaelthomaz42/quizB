@@ -15,10 +15,12 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchStatus = async () => {
             try {
-                const results = await api.getResults();
-                // Filter results to find if current user has an entry
-                const userAttempt = results.find(r => r.id === user.id);
-                setExamStatus(userAttempt ? { hasTaken: true } : { hasTaken: false });
+                const status = await api.getExamStatus();
+                // Store the full status object to access correct/wrong/duration info
+                setExamStatus({
+                    ...status,
+                    hasTaken: status?.submitted || status?.blocked
+                });
             } catch (e) {
                 setExamStatus({ hasTaken: false });
             } finally {
@@ -47,7 +49,7 @@ const Dashboard = () => {
                     <p className="text-sm text-light">Olá, <strong className="text-primary">{user.nome}</strong></p>
                 </div>
                 <div className="flex gap-4 wrap">
-                    {user.is_admin && (
+                    {Boolean(user.is_admin) && (
                         <Button
                             onClick={() => navigate('/admin')}
                             variant="outline"
@@ -68,18 +70,65 @@ const Dashboard = () => {
             <main className="flex-col gap-6">
                 <Card className="text-center" style={{ padding: '3rem 2rem' }}>
                     <h2 className="mb-4">Informações da Avaliação</h2>
-                    <p className="text-secondary mb-8" style={{ maxWidth: '500px', margin: '0 auto 2.5rem' }}>
-                        Clique no botão abaixo para iniciar sua prova. Certifique-se de estar em um local tranquilo e com boa conexão.
-                    </p>
 
                     {examStatus?.hasTaken ? (
-                        <Alert type="success">
-                            Você já concluiu esta avaliação. Sua nota será processada e disponibilizada em breve pela coordenação.
-                        </Alert>
+                        <div className="flex-col gap-6">
+                            <Alert type="success">
+                                Você concluiu esta avaliação com sucesso! Confira seu desempenho abaixo.
+                            </Alert>
+
+                            {/* Relatório de Desempenho */}
+                            <div className="grid" style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                                gap: '1rem',
+                                marginTop: '1rem'
+                            }}>
+                                <div style={{ padding: '1rem', background: 'rgba(37, 99, 235, 0.1)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--primary)' }}>
+                                    <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--primary)', textTransform: 'uppercase' }}>Total Questões</div>
+                                    <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--primary)' }}>{examStatus.total || 0}</div>
+                                </div>
+                                <div style={{ padding: '1rem', background: 'rgba(34, 197, 94, 0.1)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--success)' }}>
+                                    <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--success)', textTransform: 'uppercase' }}>Acertos</div>
+                                    <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--success)' }}>{examStatus.correct || 0}</div>
+                                </div>
+                                <div style={{ padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--error)' }}>
+                                    <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--error)', textTransform: 'uppercase' }}>Erros</div>
+                                    <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--error)' }}>{examStatus.wrong || 0}</div>
+                                </div>
+                            </div>
+
+                            {/* Informações de Período */}
+                            <div className="text-sm text-secondary" style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                gap: '2rem',
+                                padding: '1rem',
+                                background: 'white',
+                                borderRadius: 'var(--radius-sm)',
+                                border: '1px solid var(--border-light)'
+                            }}>
+                                <div><strong>Início:</strong> {examStatus.startTime ? new Date(examStatus.startTime).toLocaleTimeString() : '--'}</div>
+                                <div><strong>Duração:</strong> {Math.floor(examStatus.duration / 60)}m {examStatus.duration % 60}s</div>
+                            </div>
+
+                            <div className="flex-center mt-4">
+                                <Button
+                                    onClick={() => navigate('/revisao')}
+                                    variant="outline"
+                                    style={{ padding: '0.75rem 2rem' }}
+                                >
+                                    Conferir Minhas Respostas
+                                </Button>
+                            </div>
+                        </div>
                     ) : (
                         <div className="flex-col flex-center">
+                            <p className="text-secondary mb-8" style={{ maxWidth: '500px', margin: '0 auto 2.5rem' }}>
+                                Clique no botão abaixo para iniciar sua prova. Certifique-se de estar em um local tranquilo e com boa conexão.
+                            </p>
                             <Button
-                                onClick={() => navigate('/exam')}
+                                onClick={() => navigate('/prova')}
                                 className="btn-primary"
                                 style={{ padding: '1.25rem 3rem', fontSize: '1.1rem' }}
                             >
