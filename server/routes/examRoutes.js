@@ -7,8 +7,8 @@ const router = express.Router();
 router.get('/questions', async (req, res) => {
     try {
         // Updated: Order by creation date (newest first) instead of random
-        // Updated: Order by creation date (oldest first)
-        const [questions] = await db.query('SELECT * FROM questions ORDER BY id ASC LIMIT 10');
+        // Updated: Order by creation date (oldest first), showing ALL questions
+        const [questions] = await db.query('SELECT * FROM questions ORDER BY id ASC');
 
         const questionIds = questions.map(q => q.id);
         if (questionIds.length === 0) return res.json({ questions: [] });
@@ -53,8 +53,8 @@ router.post('/start', async (req, res) => {
             await db.query('INSERT INTO exam_attempts (user_id, status) VALUES (?, "in_progress")', [userId]);
         }
 
-        // 3. Fetch Questions (Order by ID ASC)
-        const [questions] = await db.query('SELECT * FROM questions ORDER BY id ASC LIMIT 10');
+        // 3. Fetch Questions (Order by ID ASC, ALL questions)
+        const [questions] = await db.query('SELECT * FROM questions ORDER BY id ASC');
         const questionIds = questions.map(q => q.id);
         let formattedQuestions = [];
 
