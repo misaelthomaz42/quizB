@@ -188,6 +188,13 @@ export const api = {
         body: JSON.stringify({ active })
       });
     },
+    toggleResults: async (released) => {
+      await fetch(`${API_URL}/admin/results-control`, {
+        method: 'POST',
+        headers: api._adminHeader(),
+        body: JSON.stringify({ released })
+      });
+    },
     getResults: async () => {
       const res = await fetch(`${API_URL}/admin/results`, { headers: api._adminHeader() });
       return await res.json();

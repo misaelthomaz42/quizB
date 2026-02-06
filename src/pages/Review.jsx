@@ -13,6 +13,16 @@ const Review = () => {
     useEffect(() => {
         const fetchResults = async () => {
             try {
+                // Check if results are released
+                const status = await api.getExamStatus();
+                const user = api.getCurrentUser();
+
+                if (!status.resultsReleased && !user?.is_admin) {
+                    alert('Os resultados ainda não foram liberados pelo administrador.');
+                    navigate('/');
+                    return;
+                }
+
                 const data = await api.getUserResults();
                 setResults(data);
             } catch (e) {

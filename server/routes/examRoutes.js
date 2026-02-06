@@ -131,6 +131,10 @@ router.post('/block', async (req, res) => {
 // Status
 router.get('/status/:userId', async (req, res) => {
     try {
+        // Check global results release status
+        const [settings] = await db.query("SELECT setting_value FROM system_settings WHERE setting_key = 'results_released'");
+        const resultsReleased = settings.length > 0 ? settings[0].setting_value === 'true' : false;
+
         const [attempts] = await db.query(`
             SELECT *, 
             TIMESTAMPDIFF(SECOND, start_time, end_time) as duration_seconds 
@@ -139,7 +143,7 @@ router.get('/status/:userId', async (req, res) => {
             ORDER BY start_time DESC LIMIT 1
         `, [req.params.userId]);
 
-        if (attempts.length === 0) return res.json({});
+        if (attempts.length === 0) return res.json({ resultsReleased });
 
         const last = attempts[0];
         if (last.status === 'submitted') {
@@ -152,6 +156,7 @@ router.get('/status/:userId', async (req, res) => {
 
             return res.json({
                 submitted: true,
+                resultsReleased,
                 score: last.score,
                 correct: correctCount,
                 wrong: totalAnswered - correctCount,

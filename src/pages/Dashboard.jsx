@@ -73,54 +73,67 @@ const Dashboard = () => {
 
                     {examStatus?.hasTaken ? (
                         <div className="flex-col gap-6">
-                            <Alert type="success">
-                                Você concluiu esta avaliação com sucesso! Confira seu desempenho abaixo.
-                            </Alert>
+                            {(examStatus.resultsReleased || user.is_admin) ? (
+                                <>
+                                    <Alert type="success">
+                                        Você concluiu esta avaliação com sucesso! Confira seu desempenho abaixo.
+                                    </Alert>
 
-                            {/* Relatório de Desempenho */}
-                            <div className="grid" style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-                                gap: '1rem',
-                                marginTop: '1rem'
-                            }}>
-                                <div style={{ padding: '1rem', background: 'rgba(37, 99, 235, 0.1)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--primary)' }}>
-                                    <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--primary)', textTransform: 'uppercase' }}>Total Questões</div>
-                                    <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--primary)' }}>{examStatus.total || 0}</div>
-                                </div>
-                                <div style={{ padding: '1rem', background: 'rgba(34, 197, 94, 0.1)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--success)' }}>
-                                    <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--success)', textTransform: 'uppercase' }}>Acertos</div>
-                                    <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--success)' }}>{examStatus.correct || 0}</div>
-                                </div>
-                                <div style={{ padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--error)' }}>
-                                    <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--error)', textTransform: 'uppercase' }}>Erros</div>
-                                    <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--error)' }}>{examStatus.wrong || 0}</div>
-                                </div>
-                            </div>
+                                    {/* Relatório de Desempenho */}
+                                    <div className="grid" style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                                        gap: '1rem',
+                                        marginTop: '1rem'
+                                    }}>
+                                        <div style={{ padding: '1rem', background: 'rgba(37, 99, 235, 0.1)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--primary)' }}>
+                                            <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--primary)', textTransform: 'uppercase' }}>Total Questões</div>
+                                            <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--primary)' }}>{examStatus.total || 0}</div>
+                                        </div>
+                                        <div style={{ padding: '1rem', background: 'rgba(34, 197, 94, 0.1)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--success)' }}>
+                                            <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--success)', textTransform: 'uppercase' }}>Acertos</div>
+                                            <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--success)' }}>{examStatus.correct || 0}</div>
+                                        </div>
+                                        <div style={{ padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--error)' }}>
+                                            <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--error)', textTransform: 'uppercase' }}>Erros</div>
+                                            <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--error)' }}>{examStatus.wrong || 0}</div>
+                                        </div>
+                                    </div>
 
-                            {/* Informações de Período */}
-                            <div className="text-sm text-secondary" style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                gap: '2rem',
-                                padding: '1rem',
-                                background: 'white',
-                                borderRadius: 'var(--radius-sm)',
-                                border: '1px solid var(--border-light)'
-                            }}>
-                                <div><strong>Início:</strong> {examStatus.startTime ? new Date(examStatus.startTime).toLocaleTimeString() : '--'}</div>
-                                <div><strong>Duração:</strong> {Math.floor(examStatus.duration / 60)}m {examStatus.duration % 60}s</div>
-                            </div>
+                                    {/* Informações de Período */}
+                                    <div className="text-sm text-secondary" style={{
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        gap: '2rem',
+                                        padding: '1rem',
+                                        background: 'white',
+                                        borderRadius: 'var(--radius-sm)',
+                                        border: '1px solid var(--border-light)'
+                                    }}>
+                                        <div><strong>Início:</strong> {examStatus.startTime ? new Date(examStatus.startTime).toLocaleTimeString() : '--'}</div>
+                                        <div><strong>Duração:</strong> {Math.floor(examStatus.duration / 60)}m {examStatus.duration % 60}s</div>
+                                    </div>
 
-                            <div className="flex-center mt-4">
-                                <Button
-                                    onClick={() => navigate('/revisao')}
-                                    variant="outline"
-                                    style={{ padding: '0.75rem 2rem' }}
-                                >
-                                    Conferir Minhas Respostas
-                                </Button>
-                            </div>
+                                    <div className="flex-center mt-4">
+                                        <Button
+                                            onClick={() => navigate('/revisao')}
+                                            variant="outline"
+                                            style={{ padding: '0.75rem 2rem' }}
+                                        >
+                                            Conferir Minhas Respostas
+                                        </Button>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="flex-col flex-center" style={{ padding: '2rem' }}>
+                                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⌛</div>
+                                    <h3 style={{ color: 'var(--primary)' }}>Aguardando liberação do Resultado</h3>
+                                    <p className="text-secondary mt-2">
+                                        Sua prova foi enviada com sucesso! <br />
+                                        O administrador liberará o resultado em breve.
+                                    </p>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="flex-col flex-center">

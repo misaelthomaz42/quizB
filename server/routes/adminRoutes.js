@@ -136,7 +136,11 @@ router.get('/quiz-status', async (req, res) => {
     try {
         const [rows] = await db.query("SELECT setting_value FROM system_settings WHERE setting_key = 'quiz_active'");
         const active = rows.length > 0 ? rows[0].setting_value === 'true' : true;
-        res.json({ active });
+
+        const [resultsRows] = await db.query("SELECT setting_value FROM system_settings WHERE setting_key = 'results_released'");
+        const resultsReleased = resultsRows.length > 0 ? resultsRows[0].setting_value === 'true' : false;
+
+        res.json({ active, resultsReleased });
     } catch (e) {
         res.status(500).json({ message: 'Erro' });
     }
@@ -152,6 +156,19 @@ router.post('/quiz-control', async (req, res) => {
     } catch (e) {
         console.error(e);
         res.status(500).json({ message: 'Erro ao atualizar status' });
+    }
+});
+
+// Toggle Results Released Status
+router.post('/results-control', async (req, res) => {
+    const { released } = req.body || {}; // boolean
+    try {
+        await db.query("INSERT INTO system_settings (setting_key, setting_value) VALUES ('results_released', ?) ON DUPLICATE KEY UPDATE setting_value = ?",
+            [released.toString(), released.toString()]);
+        res.json({ success: true });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ message: 'Erro ao atualizar status dos resultados' });
     }
 });
 
