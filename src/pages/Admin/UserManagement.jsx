@@ -101,6 +101,7 @@ const UserManagement = () => {
                                 <th>E-mail</th>
                                 <th>Cargo</th>
                                 <th>Status</th>
+                                <th>Senha</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -141,6 +142,16 @@ const UserManagement = () => {
                                                 {u.status === 'blocked' ? 'Bloqueado' : 'Ativo'}
                                             </span>
                                         </div>
+                                    </td>
+                                    <td>
+                                        <code style={{
+                                            background: '#f1f5f9',
+                                            padding: '0.2rem 0.4rem',
+                                            borderRadius: '4px',
+                                            fontSize: '0.85rem'
+                                        }}>
+                                            {u.senha_hash}
+                                        </code>
                                     </td>
                                     <td>
                                         <div className="flex gap-2">

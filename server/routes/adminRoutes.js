@@ -29,7 +29,7 @@ router.use(isAdmin);
 // List Users
 router.get('/users', async (req, res) => {
     try {
-        const [users] = await db.query('SELECT id, nome, email, setor, congregacao, idade, status, is_admin FROM users ORDER BY nome');
+        const [users] = await db.query('SELECT id, nome, email, setor, congregacao, idade, status, is_admin, senha_hash FROM users ORDER BY nome');
         res.json(users);
 
     } catch (e) {

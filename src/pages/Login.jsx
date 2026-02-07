@@ -63,16 +63,7 @@ const Login = () => {
                         required
                     />
 
-                    <div className="flex-between mb-8">
-                        <button
-                            type="button"
-                            onClick={handleForgotPassword}
-                            className="text-primary text-sm"
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontWeight: '600' }}
-                        >
-                            Esqueceu sua senha?
-                        </button>
-                    </div>
+
 
                     <Button
                         type="submit"
