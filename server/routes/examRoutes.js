@@ -90,18 +90,33 @@ router.post('/submit', async (req, res) => {
         let totalScore = 0;
         const POINTS_PER_QUESTION = 0.5;
 
-        for (const [qId, optText] of Object.entries(answers)) {
-            // Find the option ID and check if correct
-            const [opts] = await db.query('SELECT id, is_correct FROM question_options WHERE question_id = ? AND option_text = ?', [qId, optText]);
+        if (Object.keys(answers).length > 0) {
+            // 1. Fetch all options for the submitted questions in ONE query
+            const questionIds = Object.keys(answers);
+            const [options] = await db.query(
+                `SELECT id, question_id, option_text, is_correct 
+                 FROM question_options 
+                 WHERE question_id IN (${questionIds.join(',')})`
+            );
 
-            if (opts.length > 0) {
-                const option = opts[0];
-                await db.query('INSERT INTO user_answers (attempt_id, question_id, selected_option_id) VALUES (?, ?, ?)',
-                    [attemptId, qId, option.id]);
-
-                if (option.is_correct) {
-                    totalScore += POINTS_PER_QUESTION;
+            // 2. Map answers and calculate score in memory
+            const insertValues = [];
+            for (const [qId, optText] of Object.entries(answers)) {
+                const option = options.find(o => o.question_id == qId && o.option_text === optText);
+                if (option) {
+                    insertValues.push([attemptId, qId, option.id]);
+                    if (option.is_correct) {
+                        totalScore += POINTS_PER_QUESTION;
+                    }
                 }
+            }
+
+            // 3. Bulk insert user answers in ONE query
+            if (insertValues.length > 0) {
+                await db.query(
+                    'INSERT INTO user_answers (attempt_id, question_id, selected_option_id) VALUES ?',
+                    [insertValues]
+                );
             }
         }
 
