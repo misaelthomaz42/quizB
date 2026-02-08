@@ -137,9 +137,20 @@ const Dashboard = () => {
                         </div>
                     ) : (
                         <div className="flex-col flex-center">
-                            <p className="text-secondary mb-8" style={{ maxWidth: '500px', margin: '0 auto 2.5rem' }}>
-                                Clique no botão abaixo para iniciar sua prova. Certifique-se de estar em um local tranquilo e com boa conexão.
-                            </p>
+                            <div className="flex-col gap-2 mb-8" style={{ textAlign: 'left', maxWidth: '500px', margin: '0 auto 2.5rem' }}>
+                                <Alert type="warning" style={{ marginBottom: '0.5rem' }}>
+                                    <strong style={{ display: 'block', marginBottom: '0.25rem', fontSize: '1rem' }}>Instruções de Segurança:</strong>
+                                    <ul style={{ margin: 0, paddingLeft: '1.25rem', listStyleType: 'disc' }}>
+                                        <li>Não minimize a janela ou mude de aba</li>
+                                        <li>Não pressione F5 ou atualize a página</li>
+                                        <li>Não clique fora da janela da prova</li>
+                                        <li>A prova será encerrada automaticamente em caso de violação</li>
+                                    </ul>
+                                </Alert>
+                                <p className="text-secondary text-center">
+                                    Certifique-se de estar em um local tranquilo e com boa conexão.
+                                </p>
+                            </div>
                             <Button
                                 onClick={() => navigate('/prova')}
                                 className="btn-primary"
@@ -147,7 +158,7 @@ const Dashboard = () => {
                             >
                                 Iniciar Prova Agora
                             </Button>
-                            <p className="text-sm text-muted mt-4">Duração estimada: 60 minutos | 10 Questões</p>
+                            <p className="text-sm text-muted mt-4">Duração: 120 minutos | {examStatus?.totalQuestions || '--'} Questões</p>
                         </div>
                     )}
                 </Card>

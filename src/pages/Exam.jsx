@@ -8,7 +8,7 @@ import Alert from '../components/Alert';
 const Exam = () => {
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState({});
-    const [timeLeft, setTimeLeft] = useState(7200); // 2 horas fixas em segundos (2 * 3600)
+    const [timeLeft, setTimeLeft] = useState(7200); // 120 minutos (2 horas) em segundos
     const [isBlocked, setIsBlocked] = useState(false);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);

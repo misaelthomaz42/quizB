@@ -41,8 +41,19 @@ router.get('/users', async (req, res) => {
 router.put('/users/:id', async (req, res) => {
     const { status, is_admin } = req.body || {};
     try {
+        // Buscamos o status atual para saber se é um desbloqueio
+        const [currentUser] = await db.query('SELECT status FROM users WHERE id = ?', [req.params.id]);
+        const wasBlocked = currentUser.length > 0 && currentUser[0].status === 'blocked';
+
         await db.query('UPDATE users SET status = ?, is_admin = ? WHERE id = ?',
             [status, is_admin, req.params.id]);
+
+        // Se o usuário estava bloqueado e agora está ativo (desbloqueado)
+        if (wasBlocked && status === 'active') {
+            // Removemos qualquer prova iniciada (in_progress ou blocked) que não foi finalizada
+            await db.query('DELETE FROM exam_attempts WHERE user_id = ? AND status != "submitted"', [req.params.id]);
+        }
+
         res.json({ success: true });
     } catch (e) {
         res.status(500).json({ message: 'Erro ao atualizar usuário' });
