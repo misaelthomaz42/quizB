@@ -60,55 +60,134 @@ const ResultsRanking = () => {
                     <Button onClick={loadResults} variant="outline" style={{ width: 'auto', fontSize: '0.8rem' }}>Atualizar</Button>
                 </div>
 
-                <div className="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Pos</th>
-                                <th>Nome</th>
-                                <th>Área</th>
-                                <th>Nota</th>
-                                <th>Tempo</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {results.map((r, idx) => (
-                                <tr key={r.attempt_id}>
-                                    <td style={{ fontWeight: '800', color: idx < 3 ? 'var(--warning)' : 'inherit' }}>
-                                        {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}
-                                    </td>
-                                    <td>
-                                        <div style={{ fontWeight: '600' }}>{r.nome}</div>
-                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{r.congregação}</div>
-                                    </td>
-                                    <td>Area {r.setor || '-'}</td>
-                                    <td>
-                                        <span style={{
-                                            background: 'var(--primary-soft)',
-                                            color: 'var(--primary)',
-                                            padding: '0.25rem 0.6rem',
-                                            borderRadius: '20px',
-                                            fontWeight: '800'
-                                        }}>
-                                            {r.score || 0}
-                                        </span>
-                                    </td>
-                                    <td style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{formatTime(r.duration_seconds)}</td>
-                                    <td>
-                                        <div className="flex gap-2">
-                                            <Button onClick={() => handleViewAnswers(r)} variant="outline" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', width: 'auto' }}>
-                                                Ver Prova
-                                            </Button>
-                                            <Button onClick={() => handleDelete(r.attempt_id)} variant="danger" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', width: 'auto' }}>
-                                                Excluir
-                                            </Button>
-                                        </div>
-                                    </td>
+                {/* Ranking Área 12 */}
+                <div className="mb-8">
+                    <h4 className="text-secondary mb-4" style={{ borderBottom: '2px solid var(--secondary)', paddingBottom: '0.5rem', display: 'inline-block' }}>
+                        Área 12
+                    </h4>
+                    <div className="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Pos</th>
+                                    <th>Nome</th>
+                                    <th>Congregação</th>
+                                    <th>Área</th>
+                                    <th>Nota</th>
+                                    <th>Tempo</th>
+                                    <th>Ações</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {results.filter(r => r.setor == '12').map((r, idx) => (
+                                    <tr key={r.attempt_id}>
+                                        <td style={{ fontWeight: '800', color: idx < 3 ? 'var(--warning)' : 'inherit' }}>
+                                            {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}
+                                        </td>
+                                        <td>
+                                            <div style={{ fontWeight: '600' }}>{r.nome}</div>
+                                        </td>
+                                        <td>{r.congregacao || '-'}</td>
+                                        <td>Area {r.setor || '-'}</td>
+                                        <td>
+                                            <span style={{
+                                                background: 'var(--primary-soft)',
+                                                color: 'var(--primary)',
+                                                padding: '0.25rem 0.6rem',
+                                                borderRadius: '20px',
+                                                fontWeight: '800'
+                                            }}>
+                                                {r.score || 0}
+                                            </span>
+                                        </td>
+                                        <td style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{formatTime(r.duration_seconds)}</td>
+                                        <td>
+                                            <div className="flex gap-2">
+                                                <Button onClick={() => handleViewAnswers(r)} variant="outline" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', width: 'auto' }}>
+                                                    Ver Prova
+                                                </Button>
+                                                <Button onClick={() => handleDelete(r.attempt_id)} variant="danger" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', width: 'auto' }}>
+                                                    Excluir
+                                                </Button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {results.filter(r => r.setor == '12').length === 0 && (
+                                    <tr>
+                                        <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                                            Nenhum resultado para Área 12
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {/* Ranking Área 32 */}
+                <div>
+                    <h4 className="text-secondary mb-4" style={{ borderBottom: '2px solid var(--secondary)', paddingBottom: '0.5rem', display: 'inline-block' }}>
+                        Área 32
+                    </h4>
+                    <div className="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Pos</th>
+                                    <th>Nome</th>
+                                    <th>Congregação</th>
+                                    <th>Área</th>
+                                    <th>Nota</th>
+                                    <th>Tempo</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {results.filter(r => r.setor == '32').map((r, idx) => (
+                                    <tr key={r.attempt_id}>
+                                        <td style={{ fontWeight: '800', color: idx < 3 ? 'var(--warning)' : 'inherit' }}>
+                                            {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`}
+                                        </td>
+                                        <td>
+                                            <div style={{ fontWeight: '600' }}>{r.nome}</div>
+                                        </td>
+                                        <td>{r.congregacao || '-'}</td>
+                                        <td>Area {r.setor || '-'}</td>
+                                        <td>
+                                            <span style={{
+                                                background: 'var(--primary-soft)',
+                                                color: 'var(--primary)',
+                                                padding: '0.25rem 0.6rem',
+                                                borderRadius: '20px',
+                                                fontWeight: '800'
+                                            }}>
+                                                {r.score || 0}
+                                            </span>
+                                        </td>
+                                        <td style={{ fontFamily: 'monospace', fontWeight: 'bold' }}>{formatTime(r.duration_seconds)}</td>
+                                        <td>
+                                            <div className="flex gap-2">
+                                                <Button onClick={() => handleViewAnswers(r)} variant="outline" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', width: 'auto' }}>
+                                                    Ver Prova
+                                                </Button>
+                                                <Button onClick={() => handleDelete(r.attempt_id)} variant="danger" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', width: 'auto' }}>
+                                                    Excluir
+                                                </Button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {results.filter(r => r.setor == '32').length === 0 && (
+                                    <tr>
+                                        <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                                            Nenhum resultado para Área 32
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </Card>
 
