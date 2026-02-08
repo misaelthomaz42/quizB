@@ -88,7 +88,7 @@ router.post('/submit', async (req, res) => {
         const attemptId = attempts[0].id;
 
         let totalScore = 0;
-        const POINTS_PER_QUESTION = 0.5;
+        const POINTS_PER_QUESTION = 10 / 28;
 
         if (Object.keys(answers).length > 0) {
             // 1. Fetch all options for the submitted questions in ONE query
@@ -165,8 +165,14 @@ router.get('/status/:userId', async (req, res) => {
 
         const last = attempts[0];
         if (last.status === 'submitted') {
-            // Calculate correct answers based on score (0.5 points per question)
-            const correctCount = last.score / 0.5;
+            // Calculate correct answers by querying user_answers directly
+            const [correctAnswers] = await db.query(`
+                SELECT COUNT(*) as count 
+                FROM user_answers ua 
+                JOIN question_options qo ON ua.selected_option_id = qo.id 
+                WHERE ua.attempt_id = ? AND qo.is_correct = 1
+            `, [last.id]);
+            const correctCount = correctAnswers[0].count;
 
             // Get total questions answered in this attempt
             const [answers] = await db.query('SELECT COUNT(*) as total FROM user_answers WHERE attempt_id = ?', [last.id]);
