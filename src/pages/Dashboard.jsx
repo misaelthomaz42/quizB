@@ -18,6 +18,7 @@ const Dashboard = () => {
                 const status = await api.getExamStatus();
                 // Store the full status object to access correct/wrong/duration info
                 setExamStatus({
+                    totalQuestions: 28, // Fallback default
                     ...status,
                     hasTaken: status?.submitted || status?.blocked
                 });
@@ -88,7 +89,7 @@ const Dashboard = () => {
                                     }}>
                                         <div style={{ padding: '1rem', background: 'rgba(37, 99, 235, 0.1)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--primary)' }}>
                                             <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--primary)', textTransform: 'uppercase' }}>Total Questões</div>
-                                            <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--primary)' }}>{examStatus.total || 0}</div>
+                                            <div style={{ fontSize: '1.5rem', fontWeight: '800', color: 'var(--primary)' }}>{examStatus.total || examStatus.totalQuestions || 28}</div>
                                         </div>
                                         <div style={{ padding: '1rem', background: 'rgba(34, 197, 94, 0.1)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--success)' }}>
                                             <div style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--success)', textTransform: 'uppercase' }}>Acertos</div>
@@ -158,7 +159,7 @@ const Dashboard = () => {
                             >
                                 Iniciar Prova Agora
                             </Button>
-                            <p className="text-sm text-muted mt-4">Duração: 120 minutos | {examStatus?.totalQuestions || '--'} Questões</p>
+                            <p className="text-sm text-muted mt-4">Duração: 120 minutos | {examStatus?.totalQuestions || 28} Questões</p>
                         </div>
                     )}
                 </Card>
