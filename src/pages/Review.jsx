@@ -71,7 +71,18 @@ const Review = () => {
                                 }}>
                                     QUESTÃO {index + 1} • {isCorrect ? 'VOCÊ ACERTOU ✓' : 'VOCÊ ERROU ✗'}
                                 </span>
-                                <h3 style={{ lineHeight: '1.4', color: 'var(--text-main)' }}>{q.question_text}</h3>
+                                <h3 style={{ lineHeight: '1.4', color: 'var(--text-main)', whiteSpace: 'pre-line' }}>
+                                    {q.question_text.split('[IMAGE:').map((part, i) => {
+                                        if (i === 0) return part;
+                                        const [url, ...rest] = part.split(']');
+                                        return (
+                                            <div key={i} style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+                                                <img src={url} alt="Questão" style={{ maxWidth: '100%', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-light)' }} />
+                                                {rest.join(']')}
+                                            </div>
+                                        );
+                                    })}
+                                </h3>
                             </div>
 
                             <div className="flex-col gap-2">

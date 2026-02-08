@@ -158,7 +158,10 @@ router.get('/status/:userId', async (req, res) => {
             ORDER BY start_time DESC LIMIT 1
         `, [req.params.userId]);
 
-        if (attempts.length === 0) return res.json({ resultsReleased });
+        const [qCount] = await db.query('SELECT COUNT(*) as total FROM questions');
+        const totalQuestions = qCount[0].total;
+
+        if (attempts.length === 0) return res.json({ resultsReleased, totalQuestions });
 
         const last = attempts[0];
         if (last.status === 'submitted') {
@@ -179,11 +182,12 @@ router.get('/status/:userId', async (req, res) => {
                 startTime: last.start_time,
                 endTime: last.end_time,
                 duration: last.duration_seconds,
-                attemptId: last.id
+                attemptId: last.id,
+                totalQuestions: totalQuestions
             });
         }
-        if (last.status === 'blocked') return res.json({ blocked: true });
-        return res.json({ started: true });
+        if (last.status === 'blocked') return res.json({ blocked: true, totalQuestions });
+        return res.json({ started: true, totalQuestions });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Erro ao buscar status' });
